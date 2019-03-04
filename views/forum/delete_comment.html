@@ -1,0 +1,26 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"delete_comment"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+    {{"delete_comment"|i18n}} 
+    </h3>
+    <p class="new-reply">{{"delete_comment_prompt"|i18n}}
+        <br>
+        <span>{{comment.content}}</span>
+        <br>
+	{{"yes_or_no"|i18n}}
+    </p>
+
+    <form class="delete_form" action="/s/comment/delete" method="post">
+        <input type="hidden" name="article_id" value="{{comment.article_id}}">
+        <input type="hidden" name="comment_id" value="{{comment.id}}">
+        <br> 
+	<input type="submit" value="{{"sure"|i18n}}"> &nbsp; <a href="#" onclick="window.history.back();">{{"cancel"|i18n}}</a>
+    </form>
+</div>
+{% endblock content %}

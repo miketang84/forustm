@@ -1,0 +1,21 @@
+<div class="header">
+    <div class="logo left">
+        <a href="/">
+			<img class="left" src="/rust-logo.svg"/>
+			<div class="logo-title left">{{"title"|i18n}}</div>
+        </a>
+        <div style="clear:both;"></div>
+    </div>
+
+    <div class="signpart right">
+        {% if user %}
+        <a href="/blog_with_author?author_id={{user.id}}">{{user.nickname}}</a>
+	    <a href="/signout">{{"logout"|i18n}}</a>
+        {% else %}
+	    <a href="/login_with3rd">{{"login"|i18n}}</a>
+        {% endif %}
+		
+		<div style="clear:both;"></div>
+	</div>
+	<div style="clear:both;"></div>
+</div>

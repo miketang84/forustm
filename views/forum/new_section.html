@@ -1,0 +1,19 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"new_section"|i18n}} 
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+	<h3>{{"new_section"|i18n}}</h3>
+    <br>
+    <form action="/s/section/create" method="post">
+	    <input type="text" name="title" size="20" autofocus="autofocus" placeholder="{{"input_section_title"|i18n}}" id="title">
+        <br>
+	<input type="text" name="description" size="20" placeholder="{{"input_section_desc"|i18n}}" id="description">
+        <br>
+	<input type="submit" id="submit" value="{{"submit"|i18n}}"/>
+    </form>
+</div>
+{% endblock content %}

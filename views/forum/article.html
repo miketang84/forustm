@@ -1,0 +1,105 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{ article.title }} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<!--<link rel="stylesheet" href="//cdn.jsdelivr.net/gh/highlightjs/cdn-release@9.12.0/build/styles/default.min.css">-->
+<link rel="stylesheet" href="/css/gruvbox-light.css">
+<script src="/js/jquery.min.js"></script>
+<script src="/js/highlight.pack.js"></script>
+
+<div class="body-content article_detail detail">
+    <div class="article_detail_head">
+        {% if article.stype == 0 %}
+            <a href="/section?id={{ article.section_id }}" class="return">&lt; {{"return_section"|i18n}}</a>
+        {% else %}
+            <a href="/blog_with_author?author_id={{ author.id }}" class="return">&lt; {{"return_blog"|i18n}}</a>
+        {% endif %}
+        <div class="title">
+            <h3><a href="/article?id={{article.id}}">{{ article.title }}</a></h3>
+        </div>
+        <p class="vice-title">
+            <a href="/blog_with_author?author_id={{ author.id }}">{{ author.nickname }}</a>
+
+            {{"posted_at"|i18n}} <span class="article_created_time">{{article.created_time | zone8 }}</span>
+
+            {% if is_author or is_admin %}
+            {% if article.stype == 0 %}
+            <a class="edit" href="/p/article/edit?id={{article.id}}">{{"edit"|i18n}}</a>
+            {% else %}
+            <a class="edit" href="/p/blogarticle/edit?id={{article.id}}">{{"edit"|i18n}}</a>
+            {% endif %}
+            {% endif %}
+        </p>
+        <p>
+            {% if article.tags %}
+            <small>Tags：{{ article.tags }}</small>
+            {% endif %}
+        </p>
+    </div>
+
+    <div class="detail-body">
+        {{ article.content | safe }}
+    </div>
+
+    <div class="comments">
+        <div class="">
+            <h3 class="left">{{"comment_area"|i18n}}</h3>
+            <a class="right new-comment" href="/p/comment/new?article_id={{article.id}}">{{"write_comment"|i18n}}</a>
+            <div style="clear:both;"></div>
+        </div>
+
+        {% if comments | length == 0 %}
+            <p class="useless">{{"no_comment"|i18n}}</p>
+        {% else %}
+            {% for comment in comments %}
+            <div class="item">
+                <div class="comment-title">
+                    {% if comment.author_id == author.id %}
+                    {{"author"|i18n}}
+                    {% endif %}
+                    <a class="author-name" href="/blog_with_author?author_id={{ comment.author_id }}">
+                        {{ comment.nickname }}
+                    </a>
+                    <span class="created-time">{{ comment.created_time | zone8 }}</span>
+                    {% if is_login and user.id == comment.author_id %}
+                    <a class="delete" href="/p/comment/delete?id={{comment.id}}">{{"delete"|i18n}}</a>
+                    {% endif %}
+                    {% if is_login %}
+                    <a class="reply" href="/p/comment/new?reply_comment_id={{comment.id}}&article_id={{article.id}}">{{"reply"|i18n}}</a>
+                    {% endif %}
+                </div>
+                <div class="comment-content">
+                    {{ comment.content | safe }}
+                </div>
+            </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <div class="comment_paginator_part">
+        <div class="comment_paginator right">
+            {% for _ in range(end = total_page) %}
+            <a href="/article?id={{article.id}}&current_page={{loop.index}}"
+                    {% if loop.index==current_page %} class="current_page" {% endif %}>
+                {{ loop.index }}
+            </a>
+            {% endfor %}
+            {{"totally"|i18n}} {{ total_item }} {{"num_comments"|i18n}}, {{ total_page }} {{"page"|i18n}}
+        </div>
+        <div style="clear:both;"></div>
+    </div>
+</div>
+
+<script type="application/javascript">
+    function hightlight($doms) {
+        $doms.each(function (i, block) {
+            hljs.highlightBlock(block);
+        });
+    }
+
+    hightlight($("pre code"));
+</script>
+{% endblock content %}

@@ -1,0 +1,24 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"edit_comment"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+    {{"edit_comment"|i18n}}      
+    </h3>
+    <p class="new-reply">{{"article"|i18n}}
+        <span class="article-title">{{article.title}}</span>
+    </p>
+    <form class="" action="/s/comment/edit" method="post">
+        <input type="hidden" name="article_id" value="{{article.id}}">
+        <input type="hidden" name="id" value="{{comment.id}}">
+        <br> 
+	<textarea name="raw_content" placeholder="{{"input_content_prompt"|i18n}}" autofocus>{{comment.raw_content}}</textarea>
+        <br> 
+	<input type="submit" value="{{"biu"|i18n}}"></input>
+    </form>
+</div>
+{% endblock content %}

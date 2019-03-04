@@ -1,0 +1,222 @@
+
+[title]
+cn = "Rust语言中文社区"
+en = "Rust Language Community"
+
+[account]
+cn = "帐户"
+en = "Account"
+
+[account_info]
+cn = "帐户信息"
+en = "Account Info"
+
+[account_info_prompt]
+cn = "你现在以此帐户登录："
+en = "You'r logined with this accout:"
+
+
+[logout]
+cn = "登出"
+en = "logout"
+
+[login]
+cn = "登录"
+en = "login"
+
+[copyright]
+cn = "版权所有"
+en = "Copyright Reserved"
+
+[index]
+cn = "首页"
+en = "Index"
+
+[write_blog]
+cn = "写博客"
+en = "Write Blog"
+
+[post_article]
+cn = "发帖子"
+en = "Post Article"
+
+[latest_articles]
+cn = "最新帖子"
+en = "Latest Articles"
+
+[no_content]
+cn = "这里还没有内容哦……"
+en = "There is no content..."
+
+[blog_planet]
+cn = "博客星球"
+en = "Blog Planet"
+
+[section_rearrange]
+cn = "版块排序"
+en = "Section Rearrangement"
+
+[submit]
+cn = "提交"
+en = "Submit"
+
+[return_section]
+cn = "返回版块"
+en = "Return To Section"
+
+[return_blog]
+cn = "返回博客"
+en = "Return To Blog"
+
+[posted_at]
+cn = "发表于"
+en = "Posted at"
+
+[edit]
+cn = "编辑"
+en = "Edit"
+
+[comment_area]
+cn = "评论区"
+en = "Comments"
+
+[write_comment]
+cn = "写评论"
+en = "Write Comment"
+
+[no_comment]
+cn = "还没有评论"
+en = "No Comment"
+
+[author]
+cn = "作者"
+en = "Author"
+
+[delete]
+cn = "删除"
+en = "Delete"
+
+[reply]
+cn = "回复"
+en = "Reply"
+
+[totally]
+cn = "共"
+en = "Totally"
+
+[num_comments]
+cn = "条评论"
+en = "comments"
+
+[page]
+cn = "页"
+en = "pages"
+
+[delete_article]
+cn = "删除文章"
+en = "Delete Article"
+
+[delete_article_prompt]
+cn = "你正准备删除这篇文章："
+en = "You'r deleting this article:"
+
+[yes_or_no]
+cn = "确定或取消"
+en = "Sure or Cancel"
+
+[sure]
+cn = "确定"
+en = "Sure"
+
+[cancel]
+cn = "取消"
+en = "Cancel"
+
+[delete_comment]
+cn = "删除评论"
+en = "Delete Comment"
+
+[delete_comment_prompt]
+cn = "你正准备删除这条评论："
+en = "You'r deleting this comment:"
+
+[edit_article]
+cn = "编辑帖子"
+en = "Edit Article"
+
+[edit_blog_article]
+cn = "编辑博客"
+en = "Edit Blog Article"
+
+[input_title_prompt]
+cn = "这里输入标题"
+en = "Input title here"
+
+[input_tag_prompt]
+cn = "这里输入标签 以英文逗号分隔"
+en = "Input tags here"
+
+[input_content_prompt]
+cn = "支持 Markdown 哦，快来试试吧"
+en = "Support Markdown Syntax, try it"
+
+[biu]
+cn = "Biu！发送！"
+en = "Biu! Send!"
+
+[edit_comment]
+cn = "编辑评论"
+en = "Edit Comment"
+
+[article]
+cn = "帖子："
+en = "Article:"
+
+[edit_section]
+cn = "编辑版块"
+en = "Edit Section"
+
+[input_section_title]
+cn = "版块名称"
+en = "Section title"
+
+[input_section_desc]
+cn = "版块描述"
+en = "Section description"
+
+[new_article]
+cn = "新建帖子"
+en = "New Article"
+
+[new_blog_post]
+cn = "发表博客"
+en = "New blog post"
+
+[new_comment]
+cn = "新评论"
+en = "New comment"
+
+[new_reply_prompt]
+cn = "对如下文章进行回复："
+en = "Reply to this article:"
+
+[to_content_prompt]
+cn = "对以下内容的回复："
+en = "Reply to this comment:"
+
+[new_section]
+cn = "创建新版块"
+en = "New Section"
+
+[articles]
+cn = "篇"
+en = "articles"
+
+
+
+
+
+
+[test]
+cn="测试它"
+en="test it"

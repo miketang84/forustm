@@ -1,0 +1,297 @@
+body {
+	color: #222;
+	max-width: 800px;
+	margin: auto;
+	padding: 0;
+}
+
+h1,h2,h3,h4,h5 {
+	margin: 4px 0;
+	padding: 10px 0;
+}
+
+p, ul {
+	margin: 0;
+	padding: 0;
+}
+
+ul li {
+	height: 24px;
+	line-height: 24px;
+	list-style-type: none;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+a {
+	text-decoration: none;
+	color: #222;
+}
+
+pre {
+	background: #eee;
+	padding: 0;
+	font-family: "Source Code Pro", Menlo, Monaco, Consolas, "DejaVu Sans Mono", Inconsolata, monospace;
+}
+
+pre code {
+	font-size: 14px;
+}
+
+div code,
+p code,
+ul code {
+	background: pink;
+}
+
+.right {
+	float: right;
+}
+
+.left {
+	float: left
+}
+
+.hide {
+	display: none;
+}
+
+.header {
+	height: 40px;
+	line-height: 40px;
+	border-bottom: gray 1px solid;
+	padding: 0 10px;
+}
+
+.header .logo img {
+	width: 40px;
+}
+
+.signpart {
+	font-size: 14px;
+}
+
+.footer {
+	border-top: gray 1px solid;
+	line-height: 30px;
+	font-size: 14px;
+	text-align: center;
+}
+
+.body-content {
+	padding: 10px;
+	font-size: 14px;
+}
+
+.content-area {
+	padding: 15px;
+}
+
+.strongit {
+	font-size: 15px;
+}
+
+.icon {
+	display: inline-block;
+}
+
+.delete {
+	color: red;
+}
+
+.reply {
+	color: blue;
+}
+
+.edit {
+	color: green;
+}
+
+.return {
+	font-size: 14px;
+	color: #228;
+}
+
+.detail-body {
+	font-size: 16px;
+	padding: 20px 0px;
+}
+
+.detail-body p {
+	line-height: 24px;
+}
+
+
+.detail-body img {
+	max-width: 100%;
+}
+
+.detail-body h1,
+.detail-body h2,
+.detail-body h3,
+.detail-body h4,
+.detail-body h5 {
+	background: #eee;
+	padding: 10px 20px;
+	border-radius: 1px;
+}
+
+.detail-body ul {
+	margin: 15px 0 15px 30px;
+}
+
+.detail-body ul li {
+	list-style-type: disc;
+}
+
+
+.vice-title {
+	font-size: 14px;
+	line-height: 20px;
+}
+
+.action_area {
+	padding: 10px 0 10px 0;
+}
+
+.new-article, .new-comment {
+	display: inline-block;
+	margin-right: 10px;
+	border: 1px solid #666;
+	padding: 2px 4px;
+}
+
+.new-comment {
+	margin-top: 20px;
+}
+
+.article-list {
+	margin-top: 10px;
+	margin-bottom: 24px;
+	font-size: 16px;
+}
+
+.article-list li {
+	margin-bottom: 4px;
+}
+
+.article-list li .title {
+	max-width: 75%;
+    display: inline-block;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}
+
+.article-list li .right {
+	font-size: 14px;
+	color: #666;
+}
+
+.article-list-head span, .planet-space-head span {
+	display: inline-block;
+	border-bottom: 1px solid #666;
+	font-size: 15px;
+	line-height: 20px;
+	color: #666;
+}
+
+.category-list-section {
+	padding-top: 25px;
+}
+
+.category-list-section ul li {
+	float: left;
+	padding-right: 8px;
+}
+
+.article-list li span .title {
+	max-width: 400px;
+	display: inline-block;
+}
+
+.article-list li .show-count {
+	font-size: 14px;
+	color: #666;
+}
+
+.article-list li .info {
+	font-size: 14px;
+	color: #666;
+}
+
+.detail-head {
+	margin-bottom: 24px;
+}
+
+.body-content form {
+	line-height: 40px;
+}
+
+/* .body-content form select {
+    height: 20px;
+} */
+
+.body-content form input[type=text] {
+	min-width: 240px;
+    height: 26px;
+    font-size: 16px;
+	width: 60%;
+	padding-left: 4px;
+}
+
+.body-content form textarea {
+	width: 90%;
+    min-width: 280px;
+    min-height: 400px;
+	font-size: 15px;
+	padding-left: 4px;
+}
+
+.article_detail_head {
+	margin-top: 10px;
+}
+
+.article_detail_head .title {
+	margin-top: 15px;
+}
+
+.article_detail_head h3 {
+	font-size: 22px;
+}
+
+.comments .item {
+	line-height: 32px;
+	padding: 5px 0;
+}
+
+.comments .item .comment-title {
+	font-size: 14px;
+	padding: 4px 10px;
+	border-bottom: 1px solid #eee;
+	
+}
+
+.comments .item .comment-content {
+	font-size: 16px;
+	padding: 4px 10px;
+}
+
+.comments .item .comment-content pre {
+	font-size: 12px;
+	line-height: 22px;
+	margin: 0;
+}
+
+.new-reply {
+	line-height: 32px;
+	padding-bottom: 10px;
+}
+
+.new-reply .article-title {
+	font-weight: bold;
+}
+
+.current_page {
+	text-decoration-line: underline;
+}

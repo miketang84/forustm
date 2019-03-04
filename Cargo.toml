@@ -1,0 +1,21 @@
+[package]
+name = "forustm2"
+version = "0.1.0"
+authors = ["Daogang Tang <daogangtang@live.com>"]
+edition = "2018"
+
+[dependencies]
+log = "0.4"
+env_logger = "0.6.0"
+dotenv = "0.13.0"
+uuid = {features = ["serde", "v4"], version = "0.5.1"}
+sapper = {path = "../sapper/"}
+#sapper_std = {path = "../sapper/library/sapper_std", features=["monitor"]}
+sapper_std = {path = "../sapper/library/sapper_std"}
+rusoda = {path="../rusoda/"}
+
+
+[[bin]]
+name = "page_forum_bin"
+path = "src/page_forum_bin.rs"
+

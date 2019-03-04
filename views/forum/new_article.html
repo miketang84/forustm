@@ -1,0 +1,45 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"new_article"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    {% if is_in_blog %}
+    <h3>
+	    {{"new_blog_post"|i18n}} 
+    </h3>
+    {% else %}
+    <h3>
+	    {{"new_article"|i18n}} 
+    </h3>
+    {% endif %}
+    {% if is_in_blog %}
+    <form class="" action="/s/blogarticle/create" method="post">
+        <input type="hidden" name="stype" value="1">
+    {% else %}
+    <form class="" action="/s/article/create" method="post">
+        <select name="section_id">
+            {% for section in sections %}
+            {% if section_id == section.id %}
+            <option value ="{{section.id}}" selected>{{section.title}}</option>
+            {% else %}
+            <option value ="{{section.id}}">{{section.title}}</option>
+            {% endif %}
+            {% endfor %}
+        </select>
+        <input type="hidden" name="stype" value="0">
+        <br>
+    {% endif %}
+        <input type="hidden" name="from" value="form">
+	<input type="text" name="title" placeholder="{{"input_title_prompt"|i18n}}">
+        <br> 
+	<input type="text" name="tags" placeholder="{{"input_tag_prompt"|i18n}}">
+        <br> 
+	<textarea name="raw_content" placeholder="{{"input_content_prompt"|i18n}}" autofocus></textarea>
+        <br> 
+	<input type="submit" value="{{"biu"|i18n}}">
+    </form>
+</div>
+{% endblock content %}

@@ -1,0 +1,33 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"login"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block script %}
+{% endblock script %}
+
+{% block content %}
+<div class="content-area">
+	<h4>{{"login"|i18n}}</h4>
+    <div id="login_form">
+        <form action="/s/user/login" method="post">
+            <table>
+                <tbody>
+                <tr>
+                    <td>Account:</td>
+                    <td><input type="text" name="account" value="" size="20" autofocus="autofocus"
+                                placeholder="Email" id="login_account"></td>
+                </tr>
+                <tr>
+                    <td>Password:</td>
+                    <td><input type="password" name="password" value="" size="20" placeholder="Password"
+                                id="login_password"></td>
+                </tr>
+                </tbody>
+            </table>
+            <input type="submit" id="login" value="Login"/>
+        </form>
+    </div>
+</div>
+{% endblock content %}

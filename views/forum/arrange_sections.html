@@ -1,0 +1,23 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"section_rearrange"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+{{"section_rearrange"|i18n}}  
+    </h3>
+
+    <form class="" action="/s/section/rearrange" method="post">
+        {% for section in sections %}
+        {{section.title}} 
+        <input class="input" type="text" name="order" value="{{section.weight}}">
+        <br>
+        {% endfor %}
+         
+        <input type="submit" value="{{"submit"|i18n}}">
+    </form>
+</div>
+{% endblock content %}
