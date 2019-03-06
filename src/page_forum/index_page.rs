@@ -71,9 +71,12 @@ impl SapperModule for IndexPage {
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
         let (path, _) = req.uri();
-        if &path == "/" {
-            if !cache::cache_is_valid("index", "index") {
-                cache::cache_set("index", "index", res.body());
+
+        if envconfig::get_int_item("CACHE") == 1 {
+            if &path == "/" {
+                if !cache::cache_is_valid("index", "index") {
+                    cache::cache_set("index", "index", res.body());
+                }
             }
         }
 

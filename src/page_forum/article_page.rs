@@ -332,16 +332,17 @@ impl ArticlePage {
 
 impl SapperModule for ArticlePage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-
         let (path, _) = req.uri();
-        if &path == "/article" {
-            let params = get_query_params!(req);
-            let article_id = t_param!(params, "id");
-            let current_page = t_param_parse_default!(params, "current_page", i64, 1);
-            let part_key = article_id.to_string() + ":" + &current_page.to_string();
-            if cache::cache_is_valid("article", &part_key) {
-                let cache_content = cache::cache_get("article", &part_key);
-                return res_html_before!(cache_content);
+        if envconfig::get_int_item("CACHE") == 1 {
+            if &path == "/article" {
+                let params = get_query_params!(req);
+                let article_id = t_param!(params, "id");
+                let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+                let part_key = article_id.to_string() + ":" + &current_page.to_string();
+                if cache::cache_is_valid("article", &part_key) {
+                    let cache_content = cache::cache_get("article", &part_key);
+                    return res_html_before!(cache_content);
+                }
             }
         }
 
