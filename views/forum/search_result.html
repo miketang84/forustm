@@ -1,0 +1,25 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+Search Result - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+        Search Result 
+    </h3>
+
+    <form class="" action="/search" method="post">
+        <input class="input" type="text" name="q" value="{{q}}">
+        <input type="submit" value="Search">
+    </form>
+
+    <div>
+        {% for doc in docs %}
+        <p><a href="/article?id={{doc.article_id}}">{{doc.title}}</a></p>
+        {% endfor %}
+    </div>
+
+</div>
+{% endblock content %}

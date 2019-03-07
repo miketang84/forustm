@@ -4,11 +4,20 @@ use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index, Ind
 use tantivy::directory::MmapDirectory;
 use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
 use std::path::Path;
+use serde::{Serialize, Deserialize};
+use serde_json;
 
+#[derive(Debug)]
 pub struct Doc2Index {
     pub article_id: String,
     pub title: String,
     pub content: String,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DocFromIndex {
+    pub article_id: String,
+    pub title: String,
 }
 
 pub struct TantivyIndex {
@@ -37,15 +46,23 @@ pub fn init() -> tantivy::Result<TantivyIndex> {
     schema_builder.add_text_field("content", text_options_nostored);
     let schema = schema_builder.build();
 
-    let index = Index::create(MmapDirectory::open(Path::new("search_index")).unwrap(), schema.clone())?;
+    println!("--> 1");
+
+    let index = Index::create(MmapDirectory::open(Path::new("search_index/")).unwrap(), schema.clone())?;
     index.tokenizers().register(CANG_JIE, tokenizer()); // Build cang-jie Tokenizer
 
+    println!("--> 2");
+
     let writer = index.writer(50 * 1024 * 1024)?;
+
+    println!("--> 3");
 
     let title = schema.get_field("title").unwrap();
     let content = schema.get_field("content").unwrap();
 
     let query_parser = QueryParser::for_index(&index, vec![title, content]);
+
+    println!("--> 4");
 
     Ok(TantivyIndex {
         index,
@@ -73,6 +90,8 @@ impl TantivyIndex {
 
         self.writer.commit()?;
 
+        println!("add to tantivy index {:?}", doc);
+
         Ok(())
 
     }
@@ -97,24 +116,29 @@ impl TantivyIndex {
         Ok(())
     }
 
-    pub fn query(&self, s: &str) -> tantivy::Result<Vec<String>> {
+    pub fn query(&self, s: &str) -> tantivy::Result<Vec<DocFromIndex>> {
         let schema = self.index.schema();
 
         self.index.load_searchers()?;
         let searcher = self.index.searcher();
 
         let q = self.query_parser.parse_query(s)?;
+        println!("q {:?}", q);
 
         let mut top_docs = TopDocs::with_limit(50);
 
         let doc_addresses = searcher.search(&q, &mut top_docs)?;
 
-        let mut r_vec: Vec<String> = vec![];
+        println!("doc_addresses {:?}", doc_addresses);
+
+        let mut r_vec: Vec<DocFromIndex> = vec![];
         for (_, doc_address) in doc_addresses {
             let retrieved_doc = searcher.doc(doc_address)?;
-            r_vec.push(schema.to_json(&retrieved_doc));
+            let json_str = schema.to_json(&retrieved_doc);
+            let doc_from_index: DocFromIndex = serde_json::from_str(&json_str).unwrap();
             
-            println!("{}", schema.to_json(&retrieved_doc));
+            println!("{:?}", doc_from_index);
+            r_vec.push(doc_from_index);
         }
 
         // self.writer.wait_merging_threads()?;

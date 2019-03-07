@@ -1,8 +1,13 @@
 #[macro_use] extern crate log;
+#[macro_use]
+extern crate serde_derive;
 use std::env;
 use env_logger;
 use dotenv::dotenv;
 use rusoda;
+use serde;
+use serde_json;
+
 
 use std::sync::{
     Arc,
@@ -96,7 +101,15 @@ fn main () {
     dotenv().ok();
     //
     web_filters::register_web_filters();
-    let ttv_index = Arc::new(Mutex::new(tantivy_index::init().unwrap()));
+    let ttv_index = match tantivy_index::init() {
+        Ok(ttv_index) => {
+            Arc::new(Mutex::new(ttv_index))
+        },
+        Err(e) => {
+            panic!("{:?}", e);
+        }
+    };
+    // let ttv_index = Arc::new(Mutex::new(tantivy_index::init().unwrap()));
 
     let addr = env::var("BINDADDR").expect("DBURL must be set");
     let port = env::var("BINDPORT").expect("REDISURL must be set").parse::<u32>().unwrap();

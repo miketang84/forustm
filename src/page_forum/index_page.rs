@@ -19,6 +19,8 @@ use crate::envconfig;
 use crate::dataservice::article::Article;
 use crate::dataservice::section::Section;
 
+use crate::TtvIndex;
+
 
 pub struct IndexPage;
 
@@ -26,8 +28,6 @@ impl IndexPage {
 
     pub fn index(req: &mut Request) -> SapperResult<Response> {
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
-        let db_conn = db::get_db();
-        let redis_conn = db::get_redis();
 
         let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
         let articles = Article::get_latest_articles(napp);
@@ -49,6 +49,31 @@ impl IndexPage {
         let rss_string = rss::make_rss_feed();
 
         res_xml_string!(rss_string)
+    }
+
+    pub fn search_query_page(req: &mut Request) -> SapperResult<Response> {
+        let mut web = ext_type_owned!(req, AppWebContext).unwrap();
+
+        let params = get_query_params!(req);
+        let q = t_param_default!(params, "q", "");
+
+        let ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+        let docs = ttv_index.query(q).unwrap();
+
+        println!("{:?}", docs);
+
+        web.insert("docs", &docs);
+        web.insert("q", q);
+
+        res_html!("forum/search_result.html", web)
+    }
+
+
+    pub fn search_query(req: &mut Request) -> SapperResult<Response> {
+        let params = get_form_params!(req);
+        let q = t_param!(params, "q");
+
+        res_redirect!(format!("/search?q={}", q))
     }
 
 }
@@ -87,6 +112,8 @@ impl SapperModule for IndexPage {
     fn router(&self, router: &mut SapperRouter) -> SapperResult<()> {
         router.get("/", Self::index);
         router.get("/rss", Self::rss_xml);
+        router.get("/search", Self::search_query_page);
+        router.post("/search", Self::search_query);
 
         Ok(())
     }
