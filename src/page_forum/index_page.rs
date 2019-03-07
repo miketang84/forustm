@@ -20,6 +20,7 @@ use crate::dataservice::article::Article;
 use crate::dataservice::section::Section;
 
 use crate::TtvIndex;
+use crate::tantivy_index::{DocFromIndex, Doc2Index};
 
 
 pub struct IndexPage;
@@ -57,10 +58,13 @@ impl IndexPage {
         let params = get_query_params!(req);
         let q = t_param_default!(params, "q", "");
 
-        let ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
-        let docs = ttv_index.query(q).unwrap();
+        let mut docs: Vec<DocFromIndex> = Vec::new();
+        if q != "" {
+            let ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+            docs = ttv_index.query(q).unwrap();
 
-        println!("{:?}", docs);
+            println!("{:?}", docs);
+        }
 
         web.insert("docs", &docs);
         web.insert("q", q);
@@ -75,6 +79,27 @@ impl IndexPage {
 
         res_redirect!(format!("/search?q={}", q))
     }
+
+    pub fn makeindex(req: &mut Request) -> SapperResult<Response> {
+        let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+
+        let articles = Article::get_latest_full_articles(20);
+
+        for article in articles {
+            let doc2index = Doc2Index {
+                article_id: article.id.to_string(),
+                title: article.title,
+                content: article.raw_content
+            };
+            ttv_index.add_doc(doc2index).unwrap();
+        }
+
+        println!("Make index test finished.");
+
+        res_redirect!("/search")
+    }
+
+    
 
 }
 
@@ -114,6 +139,9 @@ impl SapperModule for IndexPage {
         router.get("/rss", Self::rss_xml);
         router.get("/search", Self::search_query_page);
         router.post("/search", Self::search_query);
+
+        router.get("/makeindex", Self::makeindex);
+
 
         Ok(())
     }

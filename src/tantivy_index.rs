@@ -16,8 +16,8 @@ pub struct Doc2Index {
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct DocFromIndex {
-    pub article_id: String,
-    pub title: String,
+    pub article_id: Vec<String>,
+    pub title: Vec<String>,
 }
 
 pub struct TantivyIndex {
@@ -46,23 +46,16 @@ pub fn init() -> tantivy::Result<TantivyIndex> {
     schema_builder.add_text_field("content", text_options_nostored);
     let schema = schema_builder.build();
 
-    println!("--> 1");
-
-    let index = Index::create(MmapDirectory::open(Path::new("search_index/")).unwrap(), schema.clone())?;
+    let index = Index::open_or_create(MmapDirectory::open(Path::new("search_index/")).unwrap(), schema.clone())?;
+    // let index = Index::open(MmapDirectory::open(Path::new("search_index/")).unwrap())?;
     index.tokenizers().register(CANG_JIE, tokenizer()); // Build cang-jie Tokenizer
 
-    println!("--> 2");
-
     let writer = index.writer(50 * 1024 * 1024)?;
-
-    println!("--> 3");
 
     let title = schema.get_field("title").unwrap();
     let content = schema.get_field("content").unwrap();
 
     let query_parser = QueryParser::for_index(&index, vec![title, content]);
-
-    println!("--> 4");
 
     Ok(TantivyIndex {
         index,
@@ -123,13 +116,10 @@ impl TantivyIndex {
         let searcher = self.index.searcher();
 
         let q = self.query_parser.parse_query(s)?;
-        println!("q {:?}", q);
 
         let mut top_docs = TopDocs::with_limit(50);
 
         let doc_addresses = searcher.search(&q, &mut top_docs)?;
-
-        println!("doc_addresses {:?}", doc_addresses);
 
         let mut r_vec: Vec<DocFromIndex> = vec![];
         for (_, doc_address) in doc_addresses {
@@ -137,7 +127,6 @@ impl TantivyIndex {
             let json_str = schema.to_json(&retrieved_doc);
             let doc_from_index: DocFromIndex = serde_json::from_str(&json_str).unwrap();
             
-            println!("{:?}", doc_from_index);
             r_vec.push(doc_from_index);
         }
 

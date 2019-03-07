@@ -187,7 +187,7 @@ impl ArticlePage {
                 let doc2index = Doc2Index {
                     article_id: article.id.to_string(),
                     title: article.title,
-                    content: article.content
+                    content: article.raw_content
                 };
                 ttv_index.add_doc(doc2index).unwrap();
 
@@ -225,7 +225,7 @@ impl ArticlePage {
                 let doc2index = Doc2Index {
                     article_id: article.id.to_string(),
                     title: article.title,
-                    content: article.content
+                    content: article.raw_content
                 };
                 ttv_index.update_doc(doc2index).unwrap();
                 res_redirect!(format!("/article?id={}", article.id))

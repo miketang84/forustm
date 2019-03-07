@@ -295,3 +295,22 @@ ul code {
 .current_page {
 	text-decoration-line: underline;
 }
+
+.search_results .caption {
+	line-height: 40px;
+	font-size: 16px;
+}
+
+.search_results .item {
+	line-height: 32px;
+	font-size: 16px;
+	padding-left: 20px;
+}
+
+.search_form .input {
+	line-height: 40px;
+}
+
+.search_form .submit {
+	height: 32px;
+}

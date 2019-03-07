@@ -1,5 +1,22 @@
 {
-  "segments": [],
+  "segments": [
+    {
+      "segment_id": "35cd5e44-0a78-475e-bcb7-65a58f53a845",
+      "max_doc": 20,
+      "deletes": {
+        "num_deleted_docs": 1,
+        "opstamp": 105
+      }
+    },
+    {
+      "segment_id": "78c56a9f-0b3b-427e-9d38-d13aa74b3b4c",
+      "max_doc": 1,
+      "deletes": {
+        "num_deleted_docs": 1,
+        "opstamp": 105
+      }
+    }
+  ],
   "schema": [
     {
       "name": "article_id",
@@ -35,5 +52,5 @@
       }
     }
   ],
-  "opstamp": 0
+  "opstamp": 105
 }

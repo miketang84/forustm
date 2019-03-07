@@ -10,8 +10,7 @@ env_logger = "0.6.0"
 dotenv = "0.13.0"
 uuid = {features = ["serde", "v4"], version = "0.5.1"}
 sapper = {path = "../sapper/"}
-#sapper_std = {path = "../sapper/library/sapper_std", features=["monitor"]}
-sapper_std = {path = "../sapper/library/sapper_std"}
+sapper_std = {path = "../sapper/library/sapper_std", features=["monitor"]}
 rusoda = {path="../rusoda/"}
 tantivy = "0.8"
 jieba-rs = "0.2"
