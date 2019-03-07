@@ -1,0 +1,39 @@
+{
+  "segments": [],
+  "schema": [
+    {
+      "name": "article_id",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "basic",
+          "tokenizer": "raw"
+        },
+        "stored": true
+      }
+    },
+    {
+      "name": "title",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "position",
+          "tokenizer": "CANG_JIE"
+        },
+        "stored": true
+      }
+    },
+    {
+      "name": "content",
+      "type": "text",
+      "options": {
+        "indexing": {
+          "record": "position",
+          "tokenizer": "CANG_JIE"
+        },
+        "stored": false
+      }
+    }
+  ],
+  "opstamp": 0
+}

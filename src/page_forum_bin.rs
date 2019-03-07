@@ -4,6 +4,11 @@ use env_logger;
 use dotenv::dotenv;
 use rusoda;
 
+use std::sync::{
+    Arc,
+    Mutex,
+};
+
 //#[macro_use] extern crate sapper_std;
 use sapper::{
     App as SapperApp,
@@ -26,6 +31,7 @@ use rusoda::web_filters;
 use rusoda::rss;
 
 mod middleware;
+mod tantivy_index;
 
 // include page modules
 mod page_forum;
@@ -41,6 +47,11 @@ impl Key for AppWebContext {
 pub struct AppUser;
 impl Key for AppUser { 
     type Value = Ruser;
+} 
+
+pub struct TtvIndex;
+impl Key for TtvIndex { 
+    type Value = Arc<Mutex<tantivy_index::TantivyIndex>>;
 } 
 
 
@@ -85,12 +96,17 @@ fn main () {
     dotenv().ok();
     //
     web_filters::register_web_filters();
+    let ttv_index = Arc::new(Mutex::new(tantivy_index::init().unwrap()));
 
     let addr = env::var("BINDADDR").expect("DBURL must be set");
     let port = env::var("BINDPORT").expect("REDISURL must be set").parse::<u32>().unwrap();
     let mut app = SapperApp::new();
     app.address(&addr)
         .port(port)
+        .init_global(Box::new(move |req: &mut Request| {
+            req.ext_mut().insert::<TtvIndex>(ttv_index.clone());
+            Ok(())
+        }))
         .with_smock(Box::new(PageForum))
         .add_module(Box::new(page_forum::index_page::IndexPage))
         .add_module(Box::new(page_forum::user_page::UserPage))

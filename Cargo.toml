@@ -13,6 +13,9 @@ sapper = {path = "../sapper/"}
 #sapper_std = {path = "../sapper/library/sapper_std", features=["monitor"]}
 sapper_std = {path = "../sapper/library/sapper_std"}
 rusoda = {path="../rusoda/"}
+tantivy = "0.8"
+jieba-rs = "0.2"
+cang-jie = "0.2"
 
 
 [[bin]]

@@ -16,7 +16,8 @@ use crate::envconfig;
 use sapper_std::res_html;
 use crate::{
     AppWebContext,
-    AppUser
+    AppUser,
+    TtvIndex,
 };
 
 use crate::dataservice::article::{
@@ -35,6 +36,11 @@ struct CommentPaginator {
     total_page: i32,
     current_page: i32
 }
+
+use crate::tantivy_index::{
+    TantivyIndex,
+    Doc2Index,
+};
 
 pub struct ArticlePage;
 
@@ -176,6 +182,15 @@ impl ArticlePage {
 
         match article_create.insert() {
             Ok(article) => {
+                // add to tantivy index
+                let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+                let doc2index = Doc2Index {
+                    article_id: article.id.to_string(),
+                    title: article.title,
+                    content: article.content
+                };
+                ttv_index.add_doc(doc2index).unwrap();
+
                 res_redirect!(format!("/article?id={}", article.id))
             },
             Err(_) => {
@@ -206,6 +221,13 @@ impl ArticlePage {
 
         match article_edit.update() {
             Ok(article) => {
+                let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+                let doc2index = Doc2Index {
+                    article_id: article.id.to_string(),
+                    title: article.title,
+                    content: article.content
+                };
+                ttv_index.update_doc(doc2index).unwrap();
                 res_redirect!(format!("/article?id={}", article.id))
             },
             Err(_) => {
@@ -221,6 +243,8 @@ impl ArticlePage {
 
         match Article::delete_by_id(article_id) {
             Ok(article) => {
+                let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+                ttv_index.delete_doc(&article.id.to_string()).unwrap();
                 res_redirect!(format!("/section?id={}", section_id))
             },
             Err(_) => {
