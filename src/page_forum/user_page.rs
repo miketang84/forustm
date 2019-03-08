@@ -90,7 +90,11 @@ impl UserPage {
         };
 
         // use dataservice logic
-        let cookie = user_login.verify_login().unwrap();
+        let cookie_r = user_login.verify_login();
+        if cookie_r.is_err() {
+            return res_redirect!("/login_with_admin");
+        }
+        let cookie = cookie_r.unwrap();
 
         let mut response = Response::new();
         let _ = set_cookie(
