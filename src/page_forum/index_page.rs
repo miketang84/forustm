@@ -81,7 +81,7 @@ impl IndexPage {
     pub fn makeindex(req: &mut Request) -> SapperResult<Response> {
         let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
 
-        let articles = Article::get_latest_full_articles(20);
+        let articles = Article::get_all_articles();
 
         for article in articles {
             let doc2index = Doc2Index {
@@ -138,6 +138,7 @@ impl SapperModule for IndexPage {
         router.get("/search", Self::search_query_page);
         router.post("/search", Self::search_query);
 
+        // need to be limited call by admin only
         router.get("/makeindex", Self::makeindex);
 
 

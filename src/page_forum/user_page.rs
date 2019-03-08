@@ -111,7 +111,7 @@ impl UserPage {
 
     pub fn user_login_with_github(req: &mut Request) -> SapperResult<Response> {
 
-        let params = get_form_params!(req);
+        let params = get_query_params!(req);
         let code = t_param!(params, "code");
 
 
@@ -199,7 +199,7 @@ impl SapperModule for UserPage {
         router.post("/s/user/register", Self::user_register);
         router.post("/s/user/login", Self::user_login);
         // this url will be called by remote github oauth2 server
-        router.post("/s/user/login_with_github", Self::user_login_with_github);
+        router.get("/login_with_github", Self::user_login_with_github);
         
 
         Ok(())
