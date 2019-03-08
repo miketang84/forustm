@@ -62,8 +62,6 @@ impl IndexPage {
         if q != "" {
             let ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
             docs = ttv_index.query(q).unwrap();
-
-            println!("{:?}", docs);
         }
 
         web.insert("docs", &docs);

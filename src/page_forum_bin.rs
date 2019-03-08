@@ -109,7 +109,6 @@ fn main () {
             panic!("{:?}", e);
         }
     };
-    // let ttv_index = Arc::new(Mutex::new(tantivy_index::init().unwrap()));
 
     let addr = env::var("BINDADDR").expect("DBURL must be set");
     let port = env::var("BINDPORT").expect("REDISURL must be set").parse::<u32>().unwrap();
