@@ -203,7 +203,7 @@ impl SapperModule for UserPage {
         router.post("/s/user/register", Self::user_register);
         router.post("/s/user/login", Self::user_login);
         // this url will be called by remote github oauth2 server
-        router.get("/login_with_github", Self::user_login_with_github);
+        router.get("/api/v1/login_with_github", Self::user_login_with_github);
         
 
         Ok(())
