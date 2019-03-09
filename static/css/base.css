@@ -1,6 +1,6 @@
 body {
 	color: #222;
-	max-width: 800px;
+	max-width: 720px;
 	margin: auto;
 	padding: 0;
 }
@@ -145,6 +145,13 @@ ul code {
 	list-style-type: disc;
 }
 
+.detail-body a:link {
+	color: blue;
+}
+
+.detail-body a:visited {
+	color: purple;
+}
 
 .vice-title {
 	font-size: 14px;
@@ -176,8 +183,15 @@ ul code {
 	margin-bottom: 4px;
 }
 
+.article-list li a.title:link {
+	color: blue;
+}
+.article-list li a.title:visited {
+	color: purple;
+}
+
+
 .article-list li .title {
-	max-width: 75%;
     display: inline-block;
     text-overflow: ellipsis;
     overflow: hidden;
@@ -313,4 +327,12 @@ ul code {
 
 .search_form .submit {
 	height: 32px;
+}
+
+.search_results a:link {
+	color: blue;
+}
+
+.search_results a:visited {
+	color: purple;
 }

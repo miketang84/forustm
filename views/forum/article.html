@@ -64,7 +64,7 @@
                         {{ comment.nickname }}
                     </a>
                     <span class="created-time">{{ comment.created_time | zone8 }}</span>
-                    {% if is_login and user.id == comment.author_id %}
+                    {% if is_login and user.id == comment.author_id or is_admin %}
                     <a class="delete" href="/p/comment/delete?id={{comment.id}}">{{"delete"|i18n}}</a>
                     {% endif %}
                     {% if is_login %}

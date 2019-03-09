@@ -96,6 +96,13 @@ impl ArticlePage {
 
         res_html!("forum/delete_article.html", web)
     }
+
+    pub fn article_path_page(req: &mut Request) -> SapperResult<Response> {
+        let params = get_path_params!(req);
+        let id = t_param_parse!(params, "id", Uuid);
+
+        res_redirect!(format!("/article?id={}", id))
+    }
     
     pub fn article_detail_page(req: &mut Request) -> SapperResult<Response> {
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
@@ -453,6 +460,7 @@ impl SapperModule for ArticlePage {
 
     fn router(&self, router: &mut SapperRouter) -> SapperResult<()> {
         router.get("/article", Self::article_detail_page);
+        router.get("/article/:id", Self::article_path_page);
 
         router.get("/p/article/create", Self::article_create_page);
         router.get("/p/article/edit", Self::article_edit_page);

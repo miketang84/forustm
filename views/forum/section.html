@@ -22,29 +22,29 @@
 
     <div class="section-body article-list">
         {% if articles | length == 0 %}
-	<p class="">{{"no_content"|i18n}}</p>
+	    <p class="">{{"no_content"|i18n}}</p>
         {% else %}
-            <ul>
-                {% for article_with_stats in articles %}
-                    <li>
-                        <span class="left">
-                            <a href="/article?id={{ article_with_stats.article.id }}" class="title left">{{ article_with_stats.article.title }}</a>
-                            <span class="show-count left">({{ article_with_stats.viewtimes }},{{ article_with_stats.comment_count }})</span>
-                            <div style="clear:both;"></div>
-                        </span>
-                        <span class="right info">
-                            <span class="tags">{{ article_with_stats.article.tags }}</span>
-                            <span class="author">{{ article_with_stats.article.author_name }}</span> 
-                            <span class="timestamp">{{ article_with_stats.article.created_time | zone8 }}</span>
-                            {% if is_admin %}
-			    <a class="delete" href="/p/article/delete?id={{article_with_stats.article.id}}">{{"delete"|i18n}}</a>
-			    <a class="edit" href="/p/article/edit?id={{article_with_stats.article.id}}">{{"edit"|i18n}}</a>
-                            {% endif %}
-                        </span>
-                        <div style="clear:both;"></div>
-                    </li>
-                {% endfor %}
-            </ul>
+        <ul>
+            {% for article_with_stats in articles %}
+            <li>
+                <span class="left">
+                    <a href="/article?id={{ article_with_stats.article.id }}" class="title left">{{ article_with_stats.article.title }}</a>
+                    <span class="show-count left">({{ article_with_stats.viewtimes }},{{ article_with_stats.comment_count }})</span>
+                    <div style="clear:both;"></div>
+                </span>
+                <span class="right info">
+                    <span class="tags">{{ article_with_stats.article.tags }}</span>
+                    <span class="author">{{ article_with_stats.article.author_name }}</span> 
+                    <span class="timestamp">{{ article_with_stats.article.created_time | zone8 }}</span>
+                    {% if is_admin %}
+                    <a class="delete" href="/p/article/delete?id={{article_with_stats.article.id}}">{{"delete"|i18n}}</a>
+                    <a class="edit" href="/p/article/edit?id={{article_with_stats.article.id}}">{{"edit"|i18n}}</a>
+                    {% endif %}
+                </span>
+                <div style="clear:both;"></div>
+            </li>
+            {% endfor %}
+        </ul>
         {% endif %}
     </div>
 

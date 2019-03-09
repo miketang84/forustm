@@ -24,8 +24,8 @@
             {% for article in articles %}
                 <li>
                     <a href="/article?id={{ article.id }}" class="title">
-                        [{{article.section_title}}] 
-                        {{ article.title }}
+                        {{ article.title }} - 
+                        {{article.section_title}}
                     </a>
                     <span class="right">
                         <span class="author">{{ article.author_name }}</span> 

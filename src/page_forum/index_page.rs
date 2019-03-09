@@ -105,12 +105,14 @@ impl IndexPage {
 impl SapperModule for IndexPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
         let (path, _) = req.uri();
-        if &path == "/" {
-            if cache::cache_is_valid("index", "index") {
-                let cache_content = cache::cache_get("index", "index");
-                
-                splog(req, status::Ok).unwrap();
-                return res_html_before!(cache_content);
+        if envconfig::get_int_item("CACHE") == 1 {
+            if &path == "/" {
+                if cache::cache_is_valid("index", "index") {
+                    let cache_content = cache::cache_get("index", "index");
+                    
+                    splog(req, status::Ok).unwrap();
+                    return res_html_before!(cache_content);
+                }
             }
         }
         
@@ -119,12 +121,9 @@ impl SapperModule for IndexPage {
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
         let (path, _) = req.uri();
-
-        if envconfig::get_int_item("CACHE") == 1 {
-            if &path == "/" {
-                if !cache::cache_is_valid("index", "index") {
-                    cache::cache_set("index", "index", res.body());
-                }
+        if &path == "/" {
+            if !cache::cache_is_valid("index", "index") {
+                cache::cache_set("index", "index", res.body());
             }
         }
 
@@ -139,7 +138,7 @@ impl SapperModule for IndexPage {
         router.post("/search", Self::search_query);
 
         // need to be limited call by admin only
-        router.get("/makeindex", Self::makeindex);
+        // router.get("/makeindex", Self::makeindex);
 
 
         Ok(())
