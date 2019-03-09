@@ -36,13 +36,13 @@ pre {
 }
 
 pre code {
-	font-size: 14px;
+	font-size: 15px;
 }
 
 div code,
 p code,
 ul code {
-	background: pink;
+	background: #eef;
 }
 
 .right {
