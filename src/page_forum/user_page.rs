@@ -128,11 +128,19 @@ impl UserPage {
 
         let account = github_user_info.account;
         let password;
+        let cookie;
+
 
         match Ruser::get_user_by_account(&account) {
             Ok(user) => {
                 // already exists
                 password = user.password;
+		// next step auto login
+		let user_login = UserLogin {
+			account,
+			password
+		};
+		cookie = user_login.verify_login_with_rawpwd().unwrap();
             },
             Err(_) => {
                 password = random_string(8);
@@ -144,17 +152,16 @@ impl UserPage {
                 };
                 // TODO: check the result
                 let _ = user_signup.sign_up(Some(github_user_info.github_address));
+		// next step auto login
+		let user_login = UserLogin {
+			account,
+			password
+		};
+		cookie = user_login.verify_login().unwrap();
             }
         }
 
-        // next step auto login
-        let user_login = UserLogin {
-            account,
-            password
-        };
-
         // use dataservice logic
-        let cookie = user_login.verify_login().unwrap();
 
         let mut response = Response::new();
         let _ = set_cookie(
