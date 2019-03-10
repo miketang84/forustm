@@ -1,0 +1,19 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+Modify Nickname - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+        Modify Nickname
+    </h3>
+    <form class="" action="/s/user/modifynickname" method="post">
+        <input type="hidden" name="id" value="{{user.id}}">
+	    <input name="nickname" placeholder="Input new nickname" autofocus>
+        <br> 
+	    <input type="submit" value="Submit"></input>
+    </form>
+</div>
+{% endblock content %}

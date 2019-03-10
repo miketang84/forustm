@@ -336,3 +336,11 @@ ul code {
 .search_results a:visited {
 	color: purple;
 }
+
+a.linked:link {
+	color: blue;
+}
+
+a.linked:visited {
+	color: purple;
+}

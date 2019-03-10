@@ -6,6 +6,7 @@ use sapper::{
     Module as SapperModule,
     Router as SapperRouter};
 use sapper_std::*;
+use uuid::Uuid;
 
 use crate::db;
 use crate::github_utils::{
@@ -14,6 +15,7 @@ use crate::github_utils::{
 };
 
 use crate::util::random_string;
+use crate::middleware::permission_need_login;
 
 // introduce macros
 use crate::{
@@ -25,7 +27,8 @@ use crate::dataservice::user::{
     Ruser,
     UserLogin,
     UserSignUp,
-    GithubUserInfo
+    GithubUserInfo,
+    UpdateUserNickname
 };
 
 
@@ -191,12 +194,44 @@ impl UserPage {
 
         res_redirect!("/")
     }
+
+    pub fn user_modifynickname_page(req: &mut Request) -> SapperResult<Response> {
+        let web = ext_type_owned!(req, AppWebContext).unwrap();
+
+        res_html!("forum/user_modifynickname_page.html", web)
+    }
+
+    pub fn user_modifynickname(req: &mut Request) -> SapperResult<Response> {
+        let web = ext_type_owned!(req, AppWebContext).unwrap();
+        let params = get_form_params!(req);
+        let id = t_param_parse!(params, "id", Uuid);
+        let nickname = t_param!(params, "nickname").to_owned();
+
+        let update_user_nickname = UpdateUserNickname {
+            id,
+            nickname
+        };
+
+        update_user_nickname.update().unwrap();
+
+        res_redirect!("/account")
+    }
     
 }
 
 
 impl SapperModule for UserPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
+        
+        match permission_need_login(req) {
+            Ok(_) => {
+                // pass, nothing need to do here
+            },
+            Err(info) => {
+                return res_400!(info);
+            }
+        }
+
 
         Ok(())
     }
@@ -207,8 +242,13 @@ impl SapperModule for UserPage {
         router.get("/account", Self::account);
         router.get("/signout", Self::user_signout);
 
-        router.post("/s/user/register", Self::user_register);
-        router.post("/s/user/login", Self::user_login);
+        router.post("/register", Self::user_register);
+        router.post("/login", Self::user_login);
+
+        router.get("/p/user/modifynickname", Self::user_modifynickname_page);
+        router.post("/s/user/modifynickname", Self::user_modifynickname);
+
+        
         // this url will be called by remote github oauth2 server
         router.get("/api/v1/login_with_github", Self::user_login_with_github);
         

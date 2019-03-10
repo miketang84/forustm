@@ -9,10 +9,13 @@
     <h3>
     {{"account_info"|i18n}} 
     </h3>
-    <div>{{"account_info_prompt"|i18n}} 
+    <div class="account_info">{{"account_info_prompt"|i18n}} 
         <a href="/blog_with_author?author_id={{user.id}}">{{user.nickname}}</a>
         <br>
-        <a href="/signout">{{"logout"|i18n}}</a>
+        <br>
+        <a class="linked" href="/p/user/modifynickname">Modify Your Nickname</a> <br>
+
+        <a class="linked" href="/signout">{{"logout"|i18n}}</a>
     </div>
 </div>
 {% endblock content %}

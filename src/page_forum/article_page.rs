@@ -382,7 +382,7 @@ impl SapperModule for ArticlePage {
                 // pass, nothing need to do here
             },
             Err(info) => {
-                return Err(SapperError::Custom("no permission".to_string()));
+                return res_400!(info);
             }
         }
 
