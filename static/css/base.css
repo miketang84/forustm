@@ -145,13 +145,15 @@ ul code {
 	list-style-type: disc;
 }
 
-.detail-body a:link {
+.detail-body a:link, .comment-content a:link {
 	color: blue;
 }
 
-.detail-body a:visited {
+.detail-body a:visited, .comment-content a:visited  {
 	color: purple;
 }
+
+
 
 .vice-title {
 	font-size: 14px;
