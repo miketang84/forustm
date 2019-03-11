@@ -470,7 +470,7 @@ impl SapperModule for ArticlePage {
         router.post("/s/article/create", Self::article_create);
         router.post("/s/article/edit", Self::article_edit);
         router.post("/s/article/delete", Self::article_delete);
-        router.post("/s/article/delete_index", Self::article_delete_index);
+        router.get("/s/article/delete_index", Self::article_delete_index);
 
         router.get("/p/blogarticle/create", Self::blog_article_create_page);
         router.get("/p/blogarticle/edit", Self::blog_article_edit_page);
