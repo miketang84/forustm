@@ -188,14 +188,7 @@ impl CommentPage {
 
 impl SapperModule for CommentPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-        match permission_need_login(req) {
-            Ok(_) => {
-                // pass, nothing need to do here
-            },
-            Err(info) => {
-                return Err(SapperError::Custom("no permission".to_string()));
-            }
-        }
+        permission_need_login(req)?;
 
         Ok(())
     }

@@ -25,7 +25,11 @@ use crate::dataservice::section::{
     UpdateSectionWeight
 };
 
-use crate::middleware::permission_need_be_admin;
+use crate::middleware::{
+    permission_need_be_admin,
+    permission_need_login,
+    is_admin,
+};
 use crate::envconfig;
 
 
@@ -34,6 +38,7 @@ pub struct SectionPage;
 impl SectionPage {
 
     pub fn section_create_page(req: &mut Request) -> SapperResult<Response> {
+        permission_need_be_admin(req)?;
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
 
         res_html!("forum/new_section.html", web)
@@ -41,14 +46,47 @@ impl SectionPage {
 
     pub fn section_edit_page(req: &mut Request) -> SapperResult<Response> {
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
-        let params = get_query_params!(req);
-        let section_id = t_param_parse!(params, "id", Uuid);
+        
+        let (path, _) = req.uri();
+        if path == "/p/blogsection/edit" {
+            let user = ext_type!(req, AppUser).unwrap();
+            match Section::get_by_suser(user.id) {
+                Ok(section) => {
+                    web.insert("section", &section);
+                    res_html!("forum/edit_section.html", web)
+                },
+                Err(info) => {
+                    res_400!(info)
+                }
+            }
+        }
+        else {
+            let params = get_query_params!(req);
+            let section_id = t_param_parse!(params, "id", Uuid);
 
-        let section = Section::get_by_id(section_id).unwrap();
-
-        web.insert("section", &section);
-
-        res_html!("forum/edit_section.html", web)
+            if is_admin(req) {
+                let section = Section::get_by_id(section_id).unwrap();
+                web.insert("section", &section);
+                res_html!("forum/edit_section.html", web)
+            }
+            else {
+                let user = ext_type!(req, AppUser).unwrap();
+                match Section::get_by_suser(user.id) {
+                    Ok(section) => {
+                        if section.id == section_id {
+                            web.insert("section", &section);
+                            res_html!("forum/edit_section.html", web)
+                        }
+                        else {
+                            res_400!("no permission.".to_string())
+                        }
+                    },
+                    Err(info) => {
+                        res_400!(info)
+                    }
+                }
+            }
+        }
     }
     
     pub fn section_detail_page(req: &mut Request) -> SapperResult<Response> {
@@ -121,6 +159,7 @@ impl SectionPage {
 
 
     pub fn section_create(req: &mut Request) -> SapperResult<Response> {
+        permission_need_be_admin(req)?;
         let params = get_form_params!(req);
         let title = t_param!(params, "title").to_owned();
         let description = t_param!(params, "description").to_owned();
@@ -163,6 +202,7 @@ impl SectionPage {
     }
 
     pub fn section_rearrange_page(req: &mut Request) -> SapperResult<Response> {
+        permission_need_be_admin(req)?;
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
 
         let sections = Section::forum_sections();
@@ -174,6 +214,7 @@ impl SectionPage {
 
 
     pub fn section_rearrange(req: &mut Request) -> SapperResult<Response> {
+        permission_need_be_admin(req)?;
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
         let params = get_form_params!(req);
         let order = t_arr_param!(params, "order");
@@ -211,15 +252,8 @@ impl SapperModule for SectionPage {
             }
         }
 
-        // cache permission
-        match permission_need_be_admin(req) {
-            Ok(_) => {
-                // pass, nothing need to do here
-            },
-            Err(info) => {
-                return Err(SapperError::Custom("No permission.".to_string()));
-            }
-        }
+        // permission
+        permission_need_login(req)?;
         
         Ok(())
     }
@@ -265,6 +299,7 @@ impl SapperModule for SectionPage {
 
         router.get("/p/section/create", Self::section_create_page);
         router.get("/p/section/edit", Self::section_edit_page);
+        router.get("/p/blogsection/edit", Self::section_edit_page);
         router.post("/s/section/create", Self::section_create);
         router.post("/s/section/edit", Self::section_edit);
 

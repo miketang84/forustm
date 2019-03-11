@@ -204,8 +204,10 @@ impl UserPage {
     pub fn user_modifynickname(req: &mut Request) -> SapperResult<Response> {
         let web = ext_type_owned!(req, AppWebContext).unwrap();
         let params = get_form_params!(req);
-        let id = t_param_parse!(params, "id", Uuid);
         let nickname = t_param!(params, "nickname").to_owned();
+
+        let user = ext_type!(req, AppUser).unwrap();
+        let id = user.id;
 
         let update_user_nickname = UpdateUserNickname {
             id,
@@ -222,16 +224,7 @@ impl UserPage {
 
 impl SapperModule for UserPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-        
-        match permission_need_login(req) {
-            Ok(_) => {
-                // pass, nothing need to do here
-            },
-            Err(info) => {
-                return res_400!(info);
-            }
-        }
-
+        permission_need_login(req)?;
 
         Ok(())
     }

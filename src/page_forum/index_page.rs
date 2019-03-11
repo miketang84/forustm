@@ -70,7 +70,6 @@ impl IndexPage {
         res_html!("forum/search_result.html", web)
     }
 
-
     pub fn search_query(req: &mut Request) -> SapperResult<Response> {
         let params = get_form_params!(req);
         let q = t_param!(params, "q");
