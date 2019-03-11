@@ -266,7 +266,7 @@ impl ArticlePage {
 
     pub fn article_delete_index(req: &mut Request) -> SapperResult<Response> {
         permission_need_be_admin(req)?;
-        let params = get_form_params!(req);
+        let params = get_query_params!(req);
         let article_id = t_param_parse!(params, "article_id", Uuid);
 
         let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
