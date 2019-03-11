@@ -21,7 +21,7 @@ use crate::dataservice::section::Section;
 
 use crate::TtvIndex;
 use crate::tantivy_index::{DocFromIndex, Doc2Index};
-
+use crate::middleware::check_cache_switch;
 
 pub struct IndexPage;
 
@@ -104,7 +104,7 @@ impl IndexPage {
 impl SapperModule for IndexPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
         let (path, _) = req.uri();
-        if envconfig::get_int_item("CACHE") == 1 {
+        if check_cache_switch(req) {
             if &path == "/" {
                 if cache::cache_is_valid("index", "index") {
                     let cache_content = cache::cache_get("index", "index");

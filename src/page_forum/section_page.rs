@@ -29,6 +29,7 @@ use crate::middleware::{
     permission_need_be_admin,
     permission_need_login,
     is_admin,
+    check_cache_switch,
 };
 use crate::envconfig;
 
@@ -238,8 +239,8 @@ impl SectionPage {
 impl SapperModule for SectionPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
         // check cache
-        let (path, _) = req.uri();
-        if envconfig::get_int_item("CACHE") == 1 {
+        if check_cache_switch(req) {
+            let (path, _) = req.uri();
             if &path == "/section" || &path == "/blog" {
                 let params = get_query_params!(req);
                 let section_id = t_param!(params, "id");
@@ -259,34 +260,29 @@ impl SapperModule for SectionPage {
     }
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
-        let res_status = res.status();
-        if res_status == status::Ok || res_status == status::Found {
-            let (path, _) = req.uri();
-            if &path == "/s/section/create" 
-                || &path == "/s/section/edit" 
-                || &path == "/s/section/rearrange" {
-            
-                cache::cache_set_invalid("index", "index");
-            }
+        let (path, _) = req.uri();
+        if &path == "/s/section/create" 
+            || &path == "/s/section/edit" 
+            || &path == "/s/section/rearrange" {
+        
+            cache::cache_set_invalid("index", "index");
+        }
 
-            // check other url
-            if &path == "/section" || &path == "/blog" {
-                let params = get_query_params!(req);
-                let section_id = t_param!(params, "id");
-                let current_page = t_param_parse_default!(params, "current_page", i64, 1);
-                let part_key = section_id.to_string() + ":" + &current_page.to_string();
-                if !cache::cache_is_valid("section", &part_key) {
-                    cache::cache_set("section", &part_key, res.body());
-                }
+        // check other url
+        if &path == "/section" || &path == "/blog" {
+            let params = get_query_params!(req);
+            let section_id = t_param!(params, "id");
+            let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+            let part_key = section_id.to_string() + ":" + &current_page.to_string();
+            if !cache::cache_is_valid("section", &part_key) {
+                cache::cache_set("section", &part_key, res.body());
             }
-            
-            if &path == "/s/section/edit" {
-                let params = get_form_params!(req);
-                let section_id = t_param!(params, "id");
-                cache::cache_set_invalid("section", section_id);
-            }
-
-
+        }
+        
+        if &path == "/s/section/edit" {
+            let params = get_form_params!(req);
+            let section_id = t_param!(params, "id");
+            cache::cache_set_invalid("section", section_id);
         }
 
         Ok(())

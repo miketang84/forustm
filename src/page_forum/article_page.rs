@@ -29,7 +29,10 @@ use crate::dataservice::section::Section;
 use crate::dataservice::user::Ruser;
 
 use crate::util::markdown_render;
-use crate::middleware::permission_need_login;
+use crate::middleware::{
+    permission_need_login,
+    check_cache_switch
+};
 
 struct CommentPaginator {
     total_comments: i32,
@@ -363,8 +366,8 @@ impl ArticlePage {
 
 impl SapperModule for ArticlePage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-        let (path, _) = req.uri();
-        if envconfig::get_int_item("CACHE") == 1 {
+        if check_cache_switch(req) {
+            let (path, _) = req.uri();
             if &path == "/article" {
                 let params = get_query_params!(req);
                 let article_id = t_param!(params, "id");
@@ -383,70 +386,67 @@ impl SapperModule for ArticlePage {
     }
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
-        let res_status = res.status();
-        if res_status == status::Ok || res_status == status::Found {
-            let (path, _) = req.uri();
-            if &path == "/s/article/create" 
-                || &path == "/s/article/edit" 
-                || &path == "/s/article/delete" 
-                || &path == "/s/blogarticle/create" 
-                || &path == "/s/blogarticle/edit" {
-            
-                cache::cache_set_invalid("index", "index");
-            }
-
-            // check other urls
-            if &path == "/s/article/create" 
-                || &path == "/s/article/edit"
-                || &path == "/s/article/delete" {
-                
-                let params = get_form_params!(req);
-                let section_id = t_param_parse!(params, "section_id", Uuid);
-
-                let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
-                let n = Section::get_articles_count_belong_to_this(section_id);
-                let total_page = ((n -1) / napp) as i64 + 1;
-
-                for i in 1..=total_page {
-                    let part_key = section_id.to_string() + ":" + &i.to_string();
-                    cache::cache_set_invalid("section", &part_key);
-                }
-            }
-
-            if &path == "/s/blogarticle/create" 
-                || &path == "/s/blogarticle/edit" {
-                let user = ext_type!(req, AppUser).unwrap();
-                let section_id = Section::get_by_suser(user.id).unwrap().id;
-
-                let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
-                let n = Section::get_articles_count_belong_to_this(section_id);
-                let total_page = ((n -1) / napp) as i64 + 1;
-
-                for i in 1..=total_page {
-                    let part_key = section_id.to_string() + ":" + &i.to_string();
-                    cache::cache_set_invalid("section", &part_key);
-                }
-            }
-
-            if &path == "/article" {
-                let params = get_query_params!(req);
-                let article_id = t_param!(params, "id");
-                let current_page = t_param_parse_default!(params, "current_page", i64, 1);
-                let part_key = article_id.to_string() + ":" + &current_page.to_string();
-                if !cache::cache_is_valid("article", &part_key) {
-                    cache::cache_set("article", &part_key, res.body());
-                }
-            }
-
-            if &path == "/s/article/edit" 
-                || &path == "/s/blogarticle/edit"  {
-                let params = get_form_params!(req);
-                let article_id = t_param!(params, "id");
-
-                cache::cache_set_invalid("article", article_id);
-            }
-
+        let (path, _) = req.uri();
+        if &path == "/s/article/create" 
+            || &path == "/s/article/edit" 
+            || &path == "/s/article/delete" 
+            || &path == "/s/blogarticle/create" 
+            || &path == "/s/blogarticle/edit" {
+        
+            cache::cache_set_invalid("index", "index");
         }
+
+        // check other urls
+        if &path == "/s/article/create" 
+            || &path == "/s/article/edit"
+            || &path == "/s/article/delete" {
+            
+            let params = get_form_params!(req);
+            let section_id = t_param_parse!(params, "section_id", Uuid);
+
+            let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
+            let n = Section::get_articles_count_belong_to_this(section_id);
+            let total_page = ((n -1) / napp) as i64 + 1;
+
+            for i in 1..=total_page {
+                let part_key = section_id.to_string() + ":" + &i.to_string();
+                cache::cache_set_invalid("section", &part_key);
+            }
+        }
+
+        if &path == "/s/blogarticle/create" 
+            || &path == "/s/blogarticle/edit" {
+            let user = ext_type!(req, AppUser).unwrap();
+            let section_id = Section::get_by_suser(user.id).unwrap().id;
+
+            let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
+            let n = Section::get_articles_count_belong_to_this(section_id);
+            let total_page = ((n -1) / napp) as i64 + 1;
+
+            for i in 1..=total_page {
+                let part_key = section_id.to_string() + ":" + &i.to_string();
+                cache::cache_set_invalid("section", &part_key);
+            }
+        }
+
+        if &path == "/article" {
+            let params = get_query_params!(req);
+            let article_id = t_param!(params, "id");
+            let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+            let part_key = article_id.to_string() + ":" + &current_page.to_string();
+            if !cache::cache_is_valid("article", &part_key) {
+                cache::cache_set("article", &part_key, res.body());
+            }
+        }
+
+        if &path == "/s/article/edit" 
+            || &path == "/s/blogarticle/edit"  {
+            let params = get_form_params!(req);
+            let article_id = t_param!(params, "id");
+
+            cache::cache_set_invalid("article", article_id);
+        }
+
 
         Ok(())
     }

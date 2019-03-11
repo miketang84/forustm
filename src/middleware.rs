@@ -4,6 +4,7 @@ use sapper::{
 };
 use sapper_std::*;
 use crate::AppUser;
+use crate::envconfig;
 
 pub fn permission_need_login(req: &mut Request) -> Result<(), SapperError> {
     let (path, _) = req.uri();
@@ -50,8 +51,23 @@ pub fn permission_need_be_admin(req: &mut Request) -> Result<(), SapperError> {
 }
 
 pub fn is_admin(req: &mut Request) -> bool {
-    let user = ext_type!(req, AppUser).unwrap();
-    if user.role >= 9 {
+    match ext_type!(req, AppUser) {
+        Some(user) => {
+            if user.role >= 9 {
+                true
+            }
+            else {
+                false
+            }
+        },
+        None => {
+            false
+        }
+    }
+}
+
+pub fn check_cache_switch(req: &mut Request) -> bool {
+    if envconfig::get_int_item("CACHE") == 1 && !is_admin(req) {
         true
     }
     else {
