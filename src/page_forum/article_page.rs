@@ -31,6 +31,7 @@ use crate::dataservice::user::Ruser;
 use crate::util::markdown_render;
 use crate::middleware::{
     permission_need_login,
+    permission_need_be_admin,
     check_cache_switch
 };
 
@@ -254,7 +255,7 @@ impl ArticlePage {
         match Article::delete_by_id(article_id) {
             Ok(article) => {
                 let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
-                ttv_index.delete_doc(&article.id.to_string()).unwrap();
+                let _ = ttv_index.delete_doc(&article.id.to_string());
                 res_redirect!(format!("/section?id={}", section_id))
             },
             Err(_) => {
@@ -263,7 +264,15 @@ impl ArticlePage {
         }  
     }
 
+    pub fn article_delete_index(req: &mut Request) -> SapperResult<Response> {
+        permission_need_be_admin(req)?;
+        let params = get_form_params!(req);
+        let article_id = t_param_parse!(params, "article_id", Uuid);
 
+        let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+        let _ = ttv_index.delete_doc(&article_id.to_string());
+        res_redirect!("/")
+    }
 
     // Blog Area
     pub fn blog_article_create_page(req: &mut Request) -> SapperResult<Response> {
@@ -461,6 +470,7 @@ impl SapperModule for ArticlePage {
         router.post("/s/article/create", Self::article_create);
         router.post("/s/article/edit", Self::article_edit);
         router.post("/s/article/delete", Self::article_delete);
+        router.post("/s/article/delete_index", Self::article_delete_index);
 
         router.get("/p/blogarticle/create", Self::blog_article_create_page);
         router.get("/p/blogarticle/edit", Self::blog_article_edit_page);
