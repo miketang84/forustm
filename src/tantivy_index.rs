@@ -6,6 +6,7 @@ use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
 use std::path::Path;
 use serde::{Serialize, Deserialize};
 use serde_json;
+use log::info;
 
 #[derive(Debug)]
 pub struct Doc2Index {
@@ -83,7 +84,7 @@ impl TantivyIndex {
 
         self.writer.commit()?;
 
-        println!("add to tantivy index {:?}", doc);
+        info!("add to tantivy index {:?}", article_id);
 
         Ok(())
 

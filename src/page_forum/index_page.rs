@@ -7,6 +7,7 @@ use sapper::{
     Module as SapperModule,
     Router as SapperRouter};
 use sapper_std::*;
+use log::info;
 
 use crate::db;
 // introduce macros
@@ -21,7 +22,10 @@ use crate::dataservice::section::Section;
 
 use crate::TtvIndex;
 use crate::tantivy_index::{DocFromIndex, Doc2Index};
-use crate::middleware::check_cache_switch;
+use crate::middleware::{
+    permission_need_be_admin,
+    check_cache_switch
+};
 
 pub struct IndexPage;
 
@@ -78,6 +82,7 @@ impl IndexPage {
     }
 
     pub fn makeindex(req: &mut Request) -> SapperResult<Response> {
+        permission_need_be_admin(req)?;
         let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
 
         let articles = Article::get_all_articles();
@@ -91,7 +96,7 @@ impl IndexPage {
             ttv_index.add_doc(doc2index).unwrap();
         }
 
-        println!("Make index test finished.");
+        info!("Make index test finished.");
 
         res_redirect!("/search")
     }
@@ -137,7 +142,7 @@ impl SapperModule for IndexPage {
         router.post("/search", Self::search_query);
 
         // need to be limited call by admin only
-        // router.get("/makeindex", Self::makeindex);
+        router.get("/makeindex", Self::makeindex);
 
 
         Ok(())
