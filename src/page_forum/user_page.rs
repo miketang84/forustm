@@ -164,8 +164,6 @@ impl UserPage {
             }
         }
 
-        // use dataservice logic
-
         let mut response = Response::new();
         let _ = set_cookie(
             &mut response,
