@@ -7,10 +7,13 @@ use std::path::Path;
 use serde::{Serialize, Deserialize};
 use serde_json;
 use log::info;
+use uuid::Uuid;
+use chrono::{DateTime, Utc, NaiveDateTime};
 
 #[derive(Debug)]
 pub struct Doc2Index {
     pub article_id: String,
+    pub created_time: String,
     pub title: String,
     pub content: String,
 }
@@ -19,6 +22,14 @@ pub struct Doc2Index {
 pub struct DocFromIndex {
     pub article_id: Vec<String>,
     pub title: Vec<String>,
+    pub created_time: Vec<String>
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+pub struct DocFromIndexOuter {
+    pub article_id: Uuid,
+    pub title: String,
+    pub created_time: DateTime<Utc>
 }
 
 pub struct TantivyIndex {
@@ -43,6 +54,7 @@ pub fn init() -> tantivy::Result<TantivyIndex> {
         .set_indexing_options(text_indexing);
 
     schema_builder.add_text_field("article_id", STRING | STORED);
+    schema_builder.add_text_field("created_time", STRING | STORED);
     schema_builder.add_text_field("title", text_options);
     schema_builder.add_text_field("content", text_options_nostored);
     let schema = schema_builder.build();
@@ -72,11 +84,13 @@ impl TantivyIndex {
         let schema = self.index.schema();
 
         let article_id = schema.get_field("article_id").unwrap();
+        let created_time = schema.get_field("created_time").unwrap();
         let title = schema.get_field("title").unwrap();
         let content = schema.get_field("content").unwrap();
 
         let mut a_doc = Document::default();
         a_doc.add_text(article_id, &doc.article_id);
+        a_doc.add_text(created_time, &doc.created_time);
         a_doc.add_text(title, &doc.title);
         a_doc.add_text(content, &doc.content);
         
@@ -84,7 +98,7 @@ impl TantivyIndex {
 
         self.writer.commit()?;
 
-        info!("add to tantivy index {:?}", article_id);
+        info!("add to tantivy index {:?}", doc.article_id);
 
         Ok(())
 
@@ -110,7 +124,7 @@ impl TantivyIndex {
         Ok(())
     }
 
-    pub fn query(&self, s: &str) -> tantivy::Result<Vec<DocFromIndex>> {
+    pub fn query(&self, s: &str) -> tantivy::Result<Vec<DocFromIndexOuter>> {
         let schema = self.index.schema();
 
         self.index.load_searchers()?;
@@ -122,16 +136,25 @@ impl TantivyIndex {
 
         let doc_addresses = searcher.search(&q, &mut top_docs)?;
 
-        let mut r_vec: Vec<DocFromIndex> = vec![];
+        let mut r_vec: Vec<DocFromIndexOuter> = vec![];
         for (_, doc_address) in doc_addresses {
             let retrieved_doc = searcher.doc(doc_address)?;
             let json_str = schema.to_json(&retrieved_doc);
             let doc_from_index: DocFromIndex = serde_json::from_str(&json_str).unwrap();
             
-            r_vec.push(doc_from_index);
+            info!("{:?}", doc_from_index);
+            let created_timestamp: i64 = doc_from_index.created_time[0].parse::<i64>().unwrap();
+
+            let new_doc = DocFromIndexOuter {
+                article_id: doc_from_index.article_id[0].parse::<Uuid>().unwrap(),
+                created_time: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(created_timestamp, 0), Utc),
+                title: doc_from_index.title[0].to_owned()
+            };
+
+            r_vec.push(new_doc);
         }
 
-        // self.writer.wait_merging_threads()?;
+        r_vec.sort_by(|a, b| b.created_time.cmp(&a.created_time));
 
         Ok(r_vec)
     }

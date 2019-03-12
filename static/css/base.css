@@ -341,6 +341,11 @@ ul code {
 	color: purple;
 }
 
+.search_results .timestamp {
+	font-size: 14px;
+}
+
+
 a.linked:link {
 	color: blue;
 }

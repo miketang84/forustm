@@ -197,6 +197,7 @@ impl ArticlePage {
                 let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
                 let doc2index = Doc2Index {
                     article_id: article.id.to_string(),
+                    created_time: article.created_time.timestamp().to_string(),
                     title: article.title,
                     content: article.raw_content
                 };
@@ -235,6 +236,7 @@ impl ArticlePage {
                 let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
                 let doc2index = Doc2Index {
                     article_id: article.id.to_string(),
+                    created_time: article.created_time.timestamp().to_string(),
                     title: article.title,
                     content: article.raw_content
                 };

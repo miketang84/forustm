@@ -21,7 +21,7 @@ use crate::dataservice::article::Article;
 use crate::dataservice::section::Section;
 
 use crate::TtvIndex;
-use crate::tantivy_index::{DocFromIndex, Doc2Index};
+use crate::tantivy_index::{DocFromIndexOuter, Doc2Index};
 use crate::middleware::{
     permission_need_be_admin,
     check_cache_switch
@@ -62,7 +62,7 @@ impl IndexPage {
         let params = get_query_params!(req);
         let q = t_param_default!(params, "q", "");
 
-        let mut docs: Vec<DocFromIndex> = Vec::new();
+        let mut docs: Vec<DocFromIndexOuter> = Vec::new();
         if q != "" {
             let ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
             docs = ttv_index.query(q).unwrap();
@@ -90,6 +90,7 @@ impl IndexPage {
         for article in articles {
             let doc2index = Doc2Index {
                 article_id: article.id.to_string(),
+                created_time: article.created_time.timestamp().to_string(),
                 title: article.title,
                 content: article.raw_content
             };

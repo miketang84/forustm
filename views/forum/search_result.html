@@ -15,7 +15,7 @@ Search - {{"title"|i18n}}
     <div class="search_results">
         <p class="caption">Search Results:</p>
         {% for doc in docs %}
-        <p class="item"><a href="/article?id={{doc.article_id[0]}}">{{doc.title[0]}}</a></p>
+        <p class="item"><span class="timestamp">{{ doc.created_time | zone8 }}</span> &nbsp; <a href="/article?id={{doc.article_id}}">{{doc.title}}</a></p>
         {% endfor %}
     </div>
 
