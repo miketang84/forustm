@@ -11,8 +11,9 @@ use uuid::Uuid;
 use crate::db;
 use crate::github_utils::{
     get_github_token,
-    get_github_user_info
+    get_github_user_info,
 };
+use crate::util::make_pwd_encode;
 
 use crate::util::random_string;
 use crate::middleware::permission_need_login;
@@ -28,7 +29,8 @@ use crate::dataservice::user::{
     UserLogin,
     UserSignUp,
     GithubUserInfo,
-    UpdateUserNickname
+    UpdateUserNickname,
+    UserChangePassword,
 };
 
 
@@ -216,6 +218,37 @@ impl UserPage {
 
         res_redirect!("/account")
     }
+
+    pub fn user_changepassword_page(req: &mut Request) -> SapperResult<Response> {
+        let web = ext_type_owned!(req, AppWebContext).unwrap();
+
+        res_html!("forum/user_change_pwd_page.html", web)
+    }
+
+    pub fn user_changepassword(req: &mut Request) -> SapperResult<Response> {
+        let web = ext_type_owned!(req, AppWebContext).unwrap();
+        let params = get_form_params!(req);
+        let old_pwd = t_param!(params, "old_pwd");
+        let new_pwd = t_param!(params, "new_pwd");
+
+        let user = ext_type!(req, AppUser).unwrap();
+        let id = user.id;
+
+        // check password equality
+        if user.password == make_pwd_encode(old_pwd, &user.salt) {
+            let user_change_pwd = UserChangePassword {
+                id,
+                password: make_pwd_encode(new_pwd, &user.salt)
+            };
+
+            let _ = user_change_pwd.change();
+
+            res_redirect!("/account")
+        }
+        else {
+            res_400!("not corrent old password.")
+        }
+    }
     
 }
 
@@ -238,6 +271,9 @@ impl SapperModule for UserPage {
 
         router.get("/p/user/modifynickname", Self::user_modifynickname_page);
         router.post("/s/user/modifynickname", Self::user_modifynickname);
+
+        router.get("/p/user/changepassword", Self::user_changepassword_page);
+        router.post("/s/user/changepassword", Self::user_changepassword);
 
         
         // this url will be called by remote github oauth2 server

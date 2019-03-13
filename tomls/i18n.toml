@@ -189,7 +189,7 @@ cn = "新建帖子"
 en = "New Article"
 
 [new_blog_post]
-cn = "发表博客"
+cn = "发表博文"
 en = "New blog post"
 
 [new_comment]

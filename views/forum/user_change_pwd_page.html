@@ -1,0 +1,20 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+Modify Password - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+        Modify Password
+    </h3>
+    <form class="" action="/s/user/changepassword" method="post">
+        <input name="old_pwd" placeholder="Input old password" autofocus>
+        <br>
+	    <input name="new_pwd" placeholder="Input new password">
+        <br> 
+	    <input type="submit" value="Submit"></input>
+    </form>
+</div>
+{% endblock content %}
