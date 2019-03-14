@@ -47,6 +47,11 @@ small {
 	font-size: 13px;
 }
 
+blockquote {
+	background: #eee;
+    padding: 0 8px;
+}
+
 .right {
 	float: right;
 }
