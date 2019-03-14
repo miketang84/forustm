@@ -16,7 +16,6 @@ p, ul {
 }
 
 ul li {
-	height: 24px;
 	line-height: 24px;
 	list-style-type: none;
 	text-overflow: ellipsis;
@@ -186,10 +185,6 @@ small {
 	margin-top: 10px;
 	margin-bottom: 24px;
 	font-size: 16px;
-}
-
-.article-list li {
-	margin-bottom: 4px;
 }
 
 .article-list li a.title:link {
