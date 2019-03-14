@@ -298,12 +298,10 @@ small {
 }
 
 .comments .item .comment-content pre {
-	background: rgb(251, 241, 199);
 	font-size: 14px;
 	line-height: 16px;
 	margin: 8px 0 0 0;
-	/* padding: 8px; */
-	/* overflow: hidden; */
+	padding: 8px;
 }
 
 .new-reply {
