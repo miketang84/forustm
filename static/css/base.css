@@ -148,6 +148,8 @@ small {
 
 .detail-body ul li {
 	list-style-type: disc;
+	overflow: inherit;
+	white-space: inherit;
 }
 
 .detail-body a:link, .comment-content a:link {
