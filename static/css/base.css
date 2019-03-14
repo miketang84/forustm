@@ -45,6 +45,10 @@ ul code {
 	background: #eef;
 }
 
+small {
+	font-size: 13px;
+}
+
 .right {
 	float: right;
 }
@@ -120,6 +124,7 @@ ul code {
 
 .detail-body p {
 	line-height: 24px;
+	padding: 7px 0;
 }
 
 
