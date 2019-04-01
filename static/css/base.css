@@ -6,8 +6,8 @@ body {
 }
 
 h1,h2,h3,h4,h5 {
-	margin: 4px 0;
-	padding: 10px 0;
+	margin: 12px 0 6px 0;
+	padding: 10px 0 10px 0;
 }
 
 h1 {
@@ -48,7 +48,7 @@ small {
 }
 
 blockquote {
-	margin: 18px 0 8px 16px;
+	margin: 8px 0 8px 16px;
 	padding: 0 8px;
 	border-left: 3px solid #aaa;
 	color: #666;
