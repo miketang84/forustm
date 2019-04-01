@@ -142,9 +142,9 @@ blockquote {
 .detail-body h3,
 .detail-body h4,
 .detail-body h5 {
-	background: #eee;
-	padding: 10px 20px;
-	border-radius: 1px;
+	background: #efefef;
+	padding: 10px;
+	border-radius: 4px;
 }
 
 .detail-body ul {
@@ -285,6 +285,10 @@ blockquote {
 
 .article_detail_head h3 {
 	font-size: 22px;
+}
+
+.comments {
+	border-top: 2px solid gray;
 }
 
 .comments .item {
