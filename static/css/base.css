@@ -6,19 +6,19 @@ body {
 }
 
 h1 {
-	font-size: 32px;
+	font-size: 30px;
 }
 
 h2 {
-	font-size: 28px;
+	font-size: 26px;
 }
 
 h3 {
-	font-size: 22px;
+	font-size: 20.5px;
 }
 
 h4 {
-	font-size: 20px;
+	font-size: 19.2px;
 }
 
 h5 {
@@ -26,7 +26,7 @@ h5 {
 }
 
 h6 {
-	font-size: 17px;
+	font-size: 16px;
 }
 
 p, ul {
