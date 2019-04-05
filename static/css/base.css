@@ -6,11 +6,27 @@ body {
 }
 
 h1 {
-	font-size: 1.5em;
+	font-size: 1.6em;
 }
 
 h2 {
-	font-size: 1.32em;
+	font-size: 1.4em;
+}
+
+h3 {
+	font-size: 1.26em;
+}
+
+h4 {
+	font-size: 1.18em;
+}
+
+h5 {
+	font-size: 1.1em;
+}
+
+h5 {
+	font-size: 1.02em;
 }
 
 p, ul {
@@ -276,10 +292,6 @@ blockquote {
 
 .article_detail_head .title {
 	margin-top: 15px;
-}
-
-.article_detail_head h3 {
-	font-size: 22px;
 }
 
 .comments {
