@@ -44,6 +44,10 @@ en = "Post Article"
 cn = "最新帖子"
 en = "Latest Articles"
 
+[latest_reply_articles]
+cn = "最新回帖"
+en = "Latest Reply Articles"
+
 [no_content]
 cn = "这里还没有内容哦……"
 en = "There is no content..."
