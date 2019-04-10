@@ -8,6 +8,7 @@ use sapper::{
     Router as SapperRouter};
 use sapper_std::*;
 use uuid::Uuid;
+use chrono::*;
 
 use crate::db;
 use crate::cache;
@@ -18,7 +19,10 @@ use crate::{
     AppUser
 };
 
-use crate::dataservice::article::Article;
+use crate::dataservice::article::{
+	Article,
+	UpdateArticleUpdatedTime
+};
 use crate::dataservice::comment::{
     Comment,
     CommentCreate,
@@ -134,6 +138,14 @@ impl CommentPage {
 
         match comment_create.insert() {
             Ok(comment) => {
+				// update article updated_time
+				let do_update = UpdateArticleUpdatedTime {
+					id: comment.article_id,
+					updated_time: Utc::now()
+				};
+				
+				let _ = do_update.update();
+				
                 res_redirect!(format!("/article?id={}", article_id))
             },
             Err(_) => {

@@ -36,6 +36,8 @@ impl IndexPage {
 
         let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
         let articles = Article::get_latest_articles(napp);
+        
+        let reply_articles = Article::get_latest_reply_articles(napp);
 
         let blog_articles = Article::get_latest_blog_articles(napp);
 
@@ -44,6 +46,7 @@ impl IndexPage {
         let sections = Section::forum_sections();
 
         web.insert("articles", &articles);
+        web.insert("reply_articles", &reply_articles);
         web.insert("blog_articles", &blog_articles);
         web.insert("sections", &sections);
 
