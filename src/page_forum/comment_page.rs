@@ -141,7 +141,7 @@ impl CommentPage {
 				// update article updated_time
 				let do_update = UpdateArticleUpdatedTime {
 					id: comment.article_id,
-					updated_time: Local::now()
+					updated_time: Utc::now()
 				};
 				
 				let _ = do_update.update();
