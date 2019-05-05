@@ -104,6 +104,12 @@ impl IndexPage {
 
         res_redirect!("/search")
     }
+    
+    pub fn acknowledgement(req: &mut Request) -> SapperResult<Response> {
+        let mut web = ext_type_owned!(req, AppWebContext).unwrap();
+
+        res_html!("forum/acknowledgement.html", web)
+    }
 
     
 
@@ -144,6 +150,7 @@ impl SapperModule for IndexPage {
         router.get("/rss", Self::rss_xml);
         router.get("/search", Self::search_query_page);
         router.post("/search", Self::search_query);
+        router.get("/acknowledgement", Self::acknowledgement);
 
         // need to be limited call by admin only
         router.get("/makeindex", Self::makeindex);
