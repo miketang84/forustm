@@ -45,11 +45,13 @@
     </div>
 
     {% if article.extlink != "" %}
-    <a target="_blank" href="{{article.extlink}}">{{article.extlink}}</a>
-    <br/>
     <div class="extlink-part">
 	<iframe src="{{article.extlink}}" width="900" height="630"></iframe>
     </div>
+    <br/>
+    <a target="_blank" class="linked" href="{{article.extlink}}">Ext Link: {{article.extlink}}</a>
+    <br/>
+    <br/>
     {% endif %}
 
     <div class="comments">
