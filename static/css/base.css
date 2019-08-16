@@ -376,3 +376,7 @@ a.linked:link {
 a.linked:visited {
 	color: purple;
 }
+
+iframe {
+	border: 0;
+}
