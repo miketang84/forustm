@@ -1,6 +1,6 @@
 body {
 	color: #222;
-	max-width: 720px;
+	max-width: 900px;
 	margin: auto;
 	padding: 0;
 }
@@ -40,6 +40,7 @@ ul li {
 	text-overflow: ellipsis;
 	overflow: hidden;
 	white-space: nowrap;
+	margin-top: 6px;
 }
 
 a {
@@ -378,6 +379,7 @@ a.linked:visited {
 }
 
 iframe {
+	width: 100%;
+	height: 630px;
 	border: 1px solid gray;
-	margin-left: -90px;
 }
