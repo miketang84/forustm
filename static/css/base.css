@@ -378,5 +378,6 @@ a.linked:visited {
 }
 
 iframe {
-	border: 0;
+	border: 1px solid gray;
+	margin-left: -90px;
 }
