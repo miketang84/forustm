@@ -17,7 +17,7 @@ use sapper_std::res_html;
 use crate::{
     AppWebContext,
     AppUser,
-    TtvIndex,
+//    TtvIndex,
 };
 
 use crate::dataservice::article::{
@@ -41,10 +41,10 @@ struct CommentPaginator {
     current_page: i32
 }
 
-use crate::tantivy_index::{
-    TantivyIndex,
-    Doc2Index,
-};
+//use crate::tantivy_index::{
+//    TantivyIndex,
+//    Doc2Index,
+//};
 
 pub struct ArticlePage;
 
@@ -173,6 +173,7 @@ impl ArticlePage {
         let section_id = t_param_parse_default!(params, "section_id", Uuid, Uuid::default());
         let title = t_param!(params, "title").to_owned();
         let tags = t_param!(params, "tags").to_owned();
+        let extlink = t_param!(params, "extlink").to_owned();
         let raw_content = t_param!(params, "raw_content");
         let stype = t_param_parse_default!(params, "stype", i32, 0);
 
@@ -183,6 +184,7 @@ impl ArticlePage {
         let article_create = ArticleCreate {
             title,
             tags,
+            extlink,
             section_id,
             author_id: user.id,
             raw_content,
@@ -194,14 +196,14 @@ impl ArticlePage {
         match article_create.insert() {
             Ok(article) => {
                 // add to tantivy index
-                let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
-                let doc2index = Doc2Index {
-                    article_id: article.id.to_string(),
-                    created_time: article.created_time.timestamp().to_string(),
-                    title: article.title,
-                    content: article.raw_content
-                };
-                ttv_index.add_doc(doc2index).unwrap();
+                // let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+                //let doc2index = Doc2Index {
+                //    article_id: article.id.to_string(),
+                //    created_time: article.created_time.timestamp().to_string(),
+                //    title: article.title,
+                //    content: article.raw_content
+                //};
+                //ttv_index.add_doc(doc2index).unwrap();
 
                 res_redirect!(format!("/article?id={}", article.id))
             },
@@ -217,6 +219,7 @@ impl ArticlePage {
         let section_id = t_param_parse!(params, "section_id", Uuid);
         let title = t_param!(params, "title").to_owned();
         let tags = t_param!(params, "tags").to_owned();
+        let extlink = t_param!(params, "extlink").to_owned();
         let raw_content = t_param!(params, "raw_content");
 
         let content = markdown_render(raw_content);
@@ -227,20 +230,21 @@ impl ArticlePage {
             section_id,
             title,
             tags,
+            extlink,
             raw_content,
             content,
         };
 
         match article_edit.update() {
             Ok(article) => {
-                let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
-                let doc2index = Doc2Index {
-                    article_id: article.id.to_string(),
-                    created_time: article.created_time.timestamp().to_string(),
-                    title: article.title,
-                    content: article.raw_content
-                };
-                ttv_index.update_doc(doc2index).unwrap();
+                //let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+                //let doc2index = Doc2Index {
+                //    article_id: article.id.to_string(),
+                //    created_time: article.created_time.timestamp().to_string(),
+                //    title: article.title,
+                //    content: article.raw_content
+                //};
+                //ttv_index.update_doc(doc2index).unwrap();
                 res_redirect!(format!("/article?id={}", article.id))
             },
             Err(_) => {
@@ -256,8 +260,8 @@ impl ArticlePage {
 
         match Article::delete_by_id(article_id) {
             Ok(article) => {
-                let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
-                let _ = ttv_index.delete_doc(&article.id.to_string());
+                //let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+                //let _ = ttv_index.delete_doc(&article.id.to_string());
                 res_redirect!(format!("/section?id={}", section_id))
             },
             Err(_) => {
@@ -271,8 +275,8 @@ impl ArticlePage {
         let params = get_query_params!(req);
         let article_id = t_param_parse!(params, "article_id", Uuid);
 
-        let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
-        let _ = ttv_index.delete_doc(&article_id.to_string());
+        //let mut ttv_index = ext_type!(req, TtvIndex).unwrap().lock().unwrap();
+        //let _ = ttv_index.delete_doc(&article_id.to_string());
         res_redirect!("/")
     }
 
@@ -322,6 +326,7 @@ impl ArticlePage {
         let article_create = ArticleCreate {
             title,
             tags,
+            extlink: "".to_string(),
             section_id,
             author_id: user.id,
             raw_content,
@@ -358,6 +363,7 @@ impl ArticlePage {
             section_id,
             title,
             tags,
+            extlink: "".to_string(),
             raw_content,
             content,
         };

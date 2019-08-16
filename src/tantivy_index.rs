@@ -41,7 +41,6 @@ pub struct TantivyIndex {
 
 
 pub fn init() -> tantivy::Result<TantivyIndex> {
-
     let mut schema_builder = SchemaBuilder::default();
 
     let text_indexing = TextFieldIndexing::default()
@@ -75,7 +74,6 @@ pub fn init() -> tantivy::Result<TantivyIndex> {
         writer,
         query_parser
     })
-
 }
 
 impl TantivyIndex {

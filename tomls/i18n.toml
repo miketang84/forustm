@@ -164,6 +164,10 @@ en = "Input tags here"
 cn = "支持 Markdown 哦，快来试试吧"
 en = "Support Markdown Syntax, try it"
 
+[input_extlink_prompt]
+cn = "这里输入外部链接"
+en = "Input external link here"
+
 [biu]
 cn = "Biu！发送！"
 en = "Biu! Send!"

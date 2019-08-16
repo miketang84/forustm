@@ -20,8 +20,8 @@ use crate::envconfig;
 use crate::dataservice::article::Article;
 use crate::dataservice::section::Section;
 
-use crate::TtvIndex;
-use crate::tantivy_index::{DocFromIndexOuter, Doc2Index};
+//use crate::TtvIndex;
+//use crate::tantivy_index::{DocFromIndexOuter, Doc2Index};
 use crate::middleware::{
     permission_need_be_admin,
     check_cache_switch
@@ -59,6 +59,7 @@ impl IndexPage {
         res_xml_string!(rss_string)
     }
 
+    /*
     pub fn search_query_page(req: &mut Request) -> SapperResult<Response> {
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
 
@@ -104,7 +105,7 @@ impl IndexPage {
 
         res_redirect!("/search")
     }
-    
+*/   
     pub fn acknowledgement(req: &mut Request) -> SapperResult<Response> {
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
 
@@ -148,12 +149,12 @@ impl SapperModule for IndexPage {
     fn router(&self, router: &mut SapperRouter) -> SapperResult<()> {
         router.get("/", Self::index);
         router.get("/rss", Self::rss_xml);
-        router.get("/search", Self::search_query_page);
-        router.post("/search", Self::search_query);
+        //router.get("/search", Self::search_query_page);
+        //router.post("/search", Self::search_query);
         router.get("/acknowledgement", Self::acknowledgement);
 
         // need to be limited call by admin only
-        router.get("/makeindex", Self::makeindex);
+        //router.get("/makeindex", Self::makeindex);
 
 
         Ok(())
