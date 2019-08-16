@@ -44,9 +44,11 @@
         {{ article.content | safe }}
     </div>
 
+    {% if article.extlink != "" %}
     <div class="extlink-part">
-	<iframe src="{{article.extlink}}" width="100%" height="750"></iframe>
+	<iframe src="{{article.extlink}}" width="900" height="630" border=0></iframe>
     </div>
+    {% endif %}
 
     <div class="comments">
         <div class="">
