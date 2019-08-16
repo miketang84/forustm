@@ -307,8 +307,8 @@ blockquote {
 .comments .item .comment-title {
 	font-size: 14px;
 	padding: 4px 10px;
-	border-bottom: 1px solid #eee;
-	
+	border: 1px solid #eee;
+	background-color: #f8f8f8;
 }
 
 .comments .item .comment-content {
