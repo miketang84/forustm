@@ -1,9 +1,9 @@
 use sapper::{
     status,
-    Request, 
-    Response, 
-    Result as SapperResult, 
-    Error as SapperError, 
+    Request,
+    Response,
+    Result as SapperResult,
+    Error as SapperError,
     Module as SapperModule,
     Router as SapperRouter};
 use sapper_std::*;
@@ -107,13 +107,14 @@ impl ArticlePage {
 
         res_redirect!(format!("/article?id={}", id))
     }
-    
+
     pub fn article_detail_page(req: &mut Request) -> SapperResult<Response> {
         let mut web = ext_type_owned!(req, AppWebContext).unwrap();
 
         let params = get_query_params!(req);
         let id = t_param_parse!(params, "id", Uuid);
         let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+        let wx = t_param_parse_default!(params, "wx", i64, 0);
 
         let article_r = Article::get_by_id(id);
         if article_r.is_err() {
@@ -164,6 +165,7 @@ impl ArticlePage {
         web.insert("is_author", &is_author);
         web.insert("is_admin", &is_admin);
         web.insert("viewtimes", &viewtimes);
+        web.insert("wx", &wx);
 
         res_html!("forum/article.html", web)
     }
@@ -210,7 +212,7 @@ impl ArticlePage {
             Err(_) => {
                 res_500!("article create error.")
             }
-        }  
+        }
      }
 
     pub fn article_edit(req: &mut Request) -> SapperResult<Response> {
@@ -250,7 +252,7 @@ impl ArticlePage {
             Err(_) => {
                 res_500!("article edit error.")
             }
-        }  
+        }
     }
 
     pub fn article_delete(req: &mut Request) -> SapperResult<Response> {
@@ -267,7 +269,7 @@ impl ArticlePage {
             Err(_) => {
                 res_500!("article delete error.")
             }
-        }  
+        }
     }
 
     pub fn article_delete_index(req: &mut Request) -> SapperResult<Response> {
@@ -342,7 +344,7 @@ impl ArticlePage {
             Err(_) => {
                 res_500!("article create error.")
             }
-        }  
+        }
      }
 
      pub fn blog_article_edit(req: &mut Request) -> SapperResult<Response> {
@@ -375,7 +377,7 @@ impl ArticlePage {
             Err(_) => {
                 res_500!("article edit error.")
             }
-        }  
+        }
     }
 
 }
@@ -404,20 +406,20 @@ impl SapperModule for ArticlePage {
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
         let (path, _) = req.uri();
-        if &path == "/s/article/create" 
-            || &path == "/s/article/edit" 
-            || &path == "/s/article/delete" 
-            || &path == "/s/blogarticle/create" 
+        if &path == "/s/article/create"
+            || &path == "/s/article/edit"
+            || &path == "/s/article/delete"
+            || &path == "/s/blogarticle/create"
             || &path == "/s/blogarticle/edit" {
-        
+
             cache::cache_set_invalid("index", "index");
         }
 
         // check other urls
-        if &path == "/s/article/create" 
+        if &path == "/s/article/create"
             || &path == "/s/article/edit"
             || &path == "/s/article/delete" {
-            
+
             let params = get_form_params!(req);
             let section_id = t_param_parse!(params, "section_id", Uuid);
 
@@ -431,7 +433,7 @@ impl SapperModule for ArticlePage {
             }
         }
 
-        if &path == "/s/blogarticle/create" 
+        if &path == "/s/blogarticle/create"
             || &path == "/s/blogarticle/edit" {
             let user = ext_type!(req, AppUser).unwrap();
             let section_id = Section::get_by_suser(user.id).unwrap().id;
@@ -456,7 +458,7 @@ impl SapperModule for ArticlePage {
             }
         }
 
-        if &path == "/s/article/edit" 
+        if &path == "/s/article/edit"
             || &path == "/s/blogarticle/edit"  {
             let params = get_form_params!(req);
             let article_id = t_param!(params, "id");
@@ -488,5 +490,3 @@ impl SapperModule for ArticlePage {
         Ok(())
     }
 }
-
-

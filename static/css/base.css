@@ -138,6 +138,11 @@ blockquote {
 	padding: 20px 0px;
 }
 
+div.detail-body-wx {
+	font-size: 15px;
+	padding: 20px 0px;
+}
+
 .detail-body p, .comments p {
 	line-height: 24px;
 	padding: 7px 0;
@@ -148,6 +153,7 @@ blockquote {
 	max-width: 100%;
 }
 
+/*
 .detail-body h1,
 .detail-body h2,
 .detail-body h3,
@@ -157,6 +163,7 @@ blockquote {
 	padding: 10px;
 	border-radius: 4px;
 }
+*/
 
 .detail-body ul {
 	margin: 15px 0 15px 30px;
