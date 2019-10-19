@@ -233,7 +233,7 @@ div.detail-body-wx {
 	color: #666;
 }
 
-.article-list-head span, .planet-space-head span {
+.head span {
 	display: inline-block;
 	border-bottom: 1px solid #666;
 	font-size: 15px;
@@ -242,7 +242,7 @@ div.detail-body-wx {
 }
 
 .category-list-section {
-	padding-top: 25px;
+/*	padding-top: 25px;*/
 }
 
 .category-list-section ul li {
