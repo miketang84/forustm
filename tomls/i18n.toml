@@ -56,6 +56,14 @@ en = "There is no content..."
 cn = "博客星球"
 en = "Blog Planet"
 
+[sections]
+cn = "版块分类"
+en = "Sections"
+
+[most_links]
+cn = "常用链接"
+en = "Most Links"
+
 [section_rearrange]
 cn = "版块排序"
 en = "Section Rearrangement"

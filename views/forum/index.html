@@ -92,6 +92,9 @@
     </div>
 
     <div class="category-list-section">
+        <div class="category-space-head head">
+		<span>{{"sections"|i18n}}</span>
+        </div>
         {% if sections | length  == 0 %}
 	<p>{{"no_content"|i18n}}</p>
         {% else %}
@@ -106,6 +109,24 @@
             <div style="clear:both;"></div>
         </div>
         {% endif %}
+    </div>
+
+    <div class="most-links-section">
+        <div class="links-section-head head">
+		<span>{{"most_links"|i18n}}</span>
+        </div>
+        <div class="container">
+            <ul>
+              <li><a href="https://rust-lang.org">rust-lang.org</a></li>
+              <li><a href="https://this-week-in-rust.org">This Week in Rust</a></li>
+              <li><a href="https://doc.rust-lang.org/std/index.html">Rust 标准库 API 文档</a></li>
+              <li><a href="https://doc.rust-lang.org/stable/rust-by-example/">Rust By Example</a></li>
+              <li><a href="https://cheats.rs">Rust 单页手册</a></li>
+              <li><a href="https://kaisery.github.io/trpl-zh-cn/foreword.html">Rust 程序设计语言（网络中文翻译）</a></li>
+              <li><a href="https://rust.cc/article?id=ed7c9379-d681-47cb-9532-0db97d883f62">Rust 语言中文社区公众账号</a></li>    
+            </ul>
+            <div style="clear:both;"></div>
+        </div>
     </div>
 </div>
 {% endblock content %}
