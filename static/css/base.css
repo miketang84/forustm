@@ -208,9 +208,12 @@ div.detail-body-wx {
 	margin-top: 20px;
 }
 
-.article-list {
+.container {
 	margin-top: 10px;
 	margin-bottom: 24px;
+}
+
+.article-list {
 	font-size: 16px;
 }
 
