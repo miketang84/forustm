@@ -17,7 +17,7 @@ use std::sync::{
 //#[macro_use] extern crate sapper_std;
 use sapper::{
     App as SapperApp,
-    Smock as SapperSmock,
+    Armor as SapperArmor,
     Result as SapperResult,
     Request,
     Response,
@@ -45,54 +45,54 @@ use self::dataservice::user::Ruser;
 
 
 pub struct AppWebContext;
-impl Key for AppWebContext { 
+impl Key for AppWebContext {
     type Value = WebContext;
-}   
+}
 
 pub struct AppUser;
-impl Key for AppUser { 
+impl Key for AppUser {
     type Value = Ruser;
-} 
+}
 
 //pub struct TtvIndex;
-//impl Key for TtvIndex { 
+//impl Key for TtvIndex {
 //    type Value = Arc<Mutex<tantivy_index::TantivyIndex>>;
-//} 
+//}
 
 
 // define global smock
 struct PageForum;
 
-impl SapperSmock for PageForum {
+impl SapperArmor for PageForum {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-        // define cookie prefix
-        sapper_std::init(req, Some("rusoda_session"))?;
-        // init web instance state
-        let mut web = WebContext::new();
-        // we can add something to web
-        match req.ext().get::<SessionVal>() {
-            Some(cookie) => {
-                // using this cookie to retreive user instance
-                match Ruser::get_user_by_cookie(&cookie) {
-                    Ok(user) => {
-                        web.insert("user", &user);
-                        req.ext_mut().insert::<AppUser>(user);
-                    },
-                    Err(_) => {}
-                }
-            },
-            None => {}
-        }
+	// define cookie prefix
+	sapper_std::init(req, Some("rusoda_session"))?;
+	// init web instance state
+	let mut web = WebContext::new();
+	// we can add something to web
+	match req.ext().get::<SessionVal>() {
+	    Some(cookie) => {
+		// using this cookie to retreive user instance
+		match Ruser::get_user_by_cookie(&cookie) {
+		    Ok(user) => {
+			web.insert("user", &user);
+			req.ext_mut().insert::<AppUser>(user);
+		    },
+		    Err(_) => {}
+		}
+	    },
+	    None => {}
+	}
 
-        // insert it to req
-        req.ext_mut().insert::<AppWebContext>(web);
+	// insert it to req
+	req.ext_mut().insert::<AppWebContext>(web);
 
-        Ok(())
+	Ok(())
     }
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
-        sapper_std::finish(req, res)?;
-        Ok(())
+	sapper_std::finish(req, res)?;
+	Ok(())
     }
 }
 
@@ -114,21 +114,20 @@ fn main () {
     let port = env::var("BINDPORT").expect("REDISURL must be set").parse::<u32>().unwrap();
     let mut app = SapperApp::new();
     app.address(&addr)
-        .port(port)
-        .init_global(Box::new(move |req: &mut Request| {
-            //req.ext_mut().insert::<TtvIndex>(ttv_index.clone());
-            Ok(())
-        }))
-        .with_smock(Box::new(PageForum))
-        .add_module(Box::new(page_forum::index_page::IndexPage))
-        .add_module(Box::new(page_forum::user_page::UserPage))
-        .add_module(Box::new(page_forum::section_page::SectionPage))
-        .add_module(Box::new(page_forum::article_page::ArticlePage))
-        .add_module(Box::new(page_forum::comment_page::CommentPage))
-        .static_file_service(true);
+	.port(port)
+	.init_global(Box::new(move |req: &mut Request| {
+	    //req.ext_mut().insert::<TtvIndex>(ttv_index.clone());
+	    Ok(())
+	}))
+	.with_armor(Box::new(PageForum))
+	.add_module(Box::new(page_forum::index_page::IndexPage))
+	.add_module(Box::new(page_forum::user_page::UserPage))
+	.add_module(Box::new(page_forum::section_page::SectionPage))
+	.add_module(Box::new(page_forum::article_page::ArticlePage))
+	.add_module(Box::new(page_forum::comment_page::CommentPage))
+	.static_file_service(true);
 
     println!("Start listen on http://{}:{}", addr, port);
     app.run_http();
 
 }
-
