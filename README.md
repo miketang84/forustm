@@ -43,7 +43,6 @@ We write this project for:
 You need an `.env` file in your project directory, whose content as like bellow:
 
 ```
-.env
 DBURL=postgres://postgres:pwd@localhost/forustm
 REDISURL=redis://127.0.0.1/0
 BINDADDR=127.0.0.1
