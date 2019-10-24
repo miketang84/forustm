@@ -18,6 +18,11 @@ use crate::{
     AppUser
 };
 
+use crate::dataservice::article::{
+    ArticleWeight,
+    ArticleWeightCreate
+};
+
 use crate::dataservice::section::{
     Section,
     SectionNew,
@@ -233,6 +238,62 @@ impl SectionPage {
 	res_redirect!("/p/section/rearrange")
     }
 
+    pub fn section_manage_view_list_page(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+
+        let sections = Section::all_forum_sections();
+
+        web.insert("sections", &sections);
+
+        res_html!("forum/manage_section_view.html", web)
+    }
+
+    pub fn section_manage_view_page(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let params = get_query_params!(req);
+        let section_id = t_param_parse!(params, "id", Uuid);
+
+        let section = Section::get_by_id(section_id).unwrap();
+        let articles = Section::get_specified_articles(section_id);
+
+        web.insert("section", &section);
+        web.insert("articles", &articles);
+
+        res_html!("forum/manage_section_view_articles.html", web)
+    }
+
+    pub fn section_manage_article_view_delete(req: &mut Request) -> SapperResult<Response> {
+        let params = get_query_params!(req);
+        let article_weight_id = t_param_parse!(params, "id", Uuid);
+
+        let aw = ArticleWeight::delete_by_id(article_weight_id).unwrap();
+
+        res_redirect!(format!("/p/section/manage_view?id={}", aw.section_id))
+    }
+
+    pub fn section_manage_article_view_add(req: &mut Request) -> SapperResult<Response> {
+        let params = get_form_params!(req);
+        let section_id = t_param_parse!(params, "section_id", Uuid);
+        let article_id = t_param_parse!(params, "article_id", Uuid);
+        let weight = t_param_parse!(params, "weight", f64);
+
+        let aw_new = ArticleWeightCreate {
+            section_id,
+            article_id,
+            weight,
+        };
+
+        let aw = aw_new.insert().unwrap();
+
+        res_redirect!(format!("/p/section/manage_view?id={}", section_id))
+    }
+
+    pub fn admin_section(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+
+        res_html!("forum/admin_landing_page.html", web)
+    }
+
 }
 
 
@@ -302,6 +363,12 @@ impl SapperModule for SectionPage {
 	router.get("/p/section/rearrange", Self::section_rearrange_page);
 	router.post("/s/section/rearrange", Self::section_rearrange);
 
+        router.get("/admin_section", Self::admin_section);
+        router.get("/p/section/manage_view_list", Self::section_manage_view_list_page);
+        router.get("/p/section/manage_view", Self::section_manage_view_page);
+        router.get("/s/section/manage_article_view/delete", Self::section_manage_article_view_delete);
+        router.post("/s/section/manage_article_view/add", Self::section_manage_article_view_add);
+        
 
 	Ok(())
     }
