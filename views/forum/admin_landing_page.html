@@ -1,0 +1,14 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"section_rearrange"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <p><a target="_blank" href="/p/article/create">Create Article</a></p><br>
+    <p><a target="_blank" href="/p/section/create">Create Section</a></p><br>
+    <p><a target="_blank" href="/p/section/manage_view_list">Section Management</a></p><br>
+    <p><a target="_blank" href="/p/section/rearrange">Section Order Rearrange</a></p><br>
+</div>
+{% endblock content %}

@@ -1,0 +1,21 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{"section_rearrange"|i18n}} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <h3>
+    Manage Section View
+    </h3>
+    {% for section in sections %}
+    <p>
+        <a href="/section?id={{section.id}}">{{section.title}}</a> &nbsp;
+        <a href="/p/section/edit?id={{section.id}}" class="edit">EditSection</a> &nbsp;
+        <a href="/p/section/manage_view?id={{section.id}}" class="edit">Manage</a> &nbsp;
+    </p>
+    <br>
+    {% endfor %}
+</div>
+{% endblock content %}

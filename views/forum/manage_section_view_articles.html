@@ -1,0 +1,37 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+Manage Section View - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <a href="/p/section/manage_view_list">&lt; back</a>
+
+    <h3>
+    Section: <a href="/section?id={{section.id}}">{{section.title}}</a>
+    </h3>
+
+    {% if articles | length == 0 %}
+    <p>{{"no_content"|i18n}}</p>
+    {% else %}
+    Article ID, Article Title, Article Weight
+    {% for article in articles %}
+    <p>{{article.article_id}}, <a href="/article?id={{article.article_id}}">{{article.title}}</a>, {{article.weight}}
+    <a href="/s/section/manage_article_view/delete?id={{article.id}}" class="delete">Delete</a>
+    </p>
+    <br>
+    {% endfor %}
+    {% endif %}
+    
+    <form class="" action="/s/section/manage_article_view/add" method="post">
+        <input class="input" type="hidden" name="section_id" value="{{section.id}}">
+        <input class="input" type="text" name="article_id" value="" placeholder="please input article id">
+        <br>
+        <input class="input" type="text" name="weight" value="" placeholder="please input article weight">
+        <br>
+        <input type="submit" value="Add it">
+    </form>
+    
+</div>
+{% endblock content %}
