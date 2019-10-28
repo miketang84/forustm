@@ -83,6 +83,10 @@ and you will see a boot up server which is bounded to the port you configured ju
 
 And then, you can operate everything in the browser.
 
+- You can go to `http://127.0.0.1:{port}/login_with_admin`, and account: `admin@admin.com`, password: `admin` to initialize the bootup content of this site.
+- go `http://127.0.0.1:{port}/admin_secion` to create sections, manage section orders, manage the top articles in one section, etc
+
+
 #### Scripts
 
 You can use ./scripts/create_test_user.sh to create some test user to login in browser.
@@ -99,8 +103,8 @@ Rust community should own its own full-featured forum application, the long aim 
 
 #### Referrences
 
+- [wasm-dev.org](https://wasm-dev.org)
 - [rust.cc](https://rust.cc) / [rust-china.org](https://rust-china.org)
 - [Rustforce](https://rustforce.net)
 - [substrater.org](https://substrater.org)
-- [wasm-dev.org](https://wasm-dev.org)
 - [Rust Users](https://users.rust-lang.org/)
