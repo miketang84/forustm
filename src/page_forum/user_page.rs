@@ -13,8 +13,9 @@ use crate::github_utils::{
     get_github_token,
     get_github_user_info,
 };
-use crate::util::make_pwd_encode;
 
+use crate::envconfig;
+use crate::util::make_pwd_encode;
 use crate::util::random_string;
 use crate::middleware::permission_need_login;
 
@@ -123,13 +124,15 @@ impl UserPage {
 	let params = get_query_params!(req);
 	let code = t_param!(params, "code");
 
+        let client_id = envconfig::get_str_item("GITHUB_APP_CLIENT_ID");
+        let client_secret = envconfig::get_str_item("GITHUB_APP_CLIENT_SECRET");
 
-	let token_r = get_github_token(&code);
-	if token_r.is_err() {
-	    return res_400!("get github token code err");
-	}
-	let access_token = token_r.unwrap();
-	let github_user_info: GithubUserInfo = get_github_user_info(&access_token).unwrap();
+        let token_r = get_github_token(&code, client_id, client_secret);
+        if token_r.is_err() {
+            return res_400!("get github token code err");
+        }
+        let access_token = token_r.unwrap();
+        let github_user_info: GithubUserInfo = get_github_user_info(&access_token).unwrap();
 
 	let account = github_user_info.account;
 	let password;
