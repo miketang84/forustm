@@ -9,7 +9,6 @@ Now, we use postgresql as main db, to store all things, and use redis to store u
 - Redis, version > 2
 - Postgresql, version > 9
 
-and you will find ./schema/schema.sql, you need use pg client, such as `psql`, to make a new empty db in postgresql before bootuping forustm bin.
 
 #### Structure
 
@@ -18,6 +17,7 @@ This forum is developed by [Sapper](https://github.com/daogangtang/sapper), whic
 Although it is not well documented now, it ran as a community forum for three years (wow :) )
 
 But I will surely supply more documentations on it, in fact I am waiting the release of `async-std` and correspoding hyper branch version, or other http server crate version.
+
 
 #### Features
 
@@ -38,6 +38,19 @@ We write this project for:
 2. Giving a practical example for sapper project
 3. Keeping code clean and easy to learn
 
+
+#### Db Operation
+
+You will find ./schema/schema.sql, you need use pg client, such as `psql`, to make a new empty db in postgresql before bootuping forustm bin.
+
+1. use psql to connect to pg: `psql`
+2. create an new db: `create database foobar;`
+3. connect this new db: `\c foobar;`
+4. import sql file: `\i  {project_path}/schema/schema.sql;`
+
+That's all operations on db.
+
+
 #### Configuration
 
 You need an `.env` file in your project directory, whose content as like bellow:
@@ -53,6 +66,8 @@ RUSODA_LANG=en
 NUMBER_ARTICLE_PER_PAGE=20
 NUMBER_COMMENT_PER_PAGE=20
 CACHE=0
+GITHUB_APP_CLIENT_ID=xxxx
+GITHUB_APP_CLIENT_SECRET=xxxxxx
 ```
 
 #### Bootup
@@ -67,6 +82,12 @@ and you will see a boot up server which is bounded to the port you configured ju
 #### Operating
 
 And then, you can operate everything in the browser.
+
+#### Scripts
+
+You can use ./scripts/create_test_user.sh to create some test user to login in browser.
+
+The parameters in this script file could be modified by your need.
 
 #### Good Lucky
 
