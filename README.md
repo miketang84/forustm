@@ -99,6 +99,8 @@ Rust community should own its own full-featured forum application, the long aim 
 
 #### Referrences
 
-- [rust.cc](https://rust.cc)
+- [rust.cc](https://rust.cc) / [rust-china.org](https://rust-china.org)
 - [Rustforce](https://rustforce.net)
+- [substrater.org](https://substrater.org)
+- [wasm-dev.org](https://wasm-dev.org)
 - [Rust Users](https://users.rust-lang.org/)
