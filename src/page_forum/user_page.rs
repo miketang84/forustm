@@ -62,6 +62,9 @@ impl UserPage {
                 return res_html!("forum/account.html", web);
             },
             None => {
+                let client_id = envconfig::get_str_item("GITHUB_APP_CLIENT_ID");
+                web.insert("client_id", &client_id);
+
                 return res_html!("forum/login_with3rd.html", web);
             }
         }
