@@ -17,7 +17,7 @@ use sapper_std::res_html;
 use crate::{
     AppWebContext,
     AppUser,
-//    TtvIndex,
+    TtvIndex,
 };
 
 use crate::dataservice::article::{
@@ -41,10 +41,10 @@ struct CommentPaginator {
     current_page: i32
 }
 
-//use crate::tantivy_index::{
-//    TantivyIndex,
-//    Doc2Index,
-//};
+use crate::tantivy_index::{
+   TantivyIndex,
+   Doc2Index,
+};
 
 pub struct ArticlePage;
 
@@ -198,14 +198,14 @@ impl ArticlePage {
 	match article_create.insert() {
 	    Ok(article) => {
 		// add to tantivy index
-		// let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
-		//let doc2index = Doc2Index {
-		//    article_id: article.id.to_string(),
-		//    created_time: article.created_time.timestamp().to_string(),
-		//    title: article.title,
-		//    content: article.raw_content
-		//};
-		//ttv_index.add_doc(doc2index).unwrap();
+		let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
+		let doc2index = Doc2Index {
+		   article_id: article.id.to_string(),
+		   created_time: article.created_time.timestamp().to_string(),
+		   title: article.title,
+		   content: article.raw_content
+		};
+		ttv_index.add_doc(doc2index).unwrap();
 
 		res_redirect!(format!("/article?id={}", article.id))
 	    },
@@ -239,14 +239,14 @@ impl ArticlePage {
 
 	match article_edit.update() {
 	    Ok(article) => {
-		//let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
-		//let doc2index = Doc2Index {
-		//    article_id: article.id.to_string(),
-		//    created_time: article.created_time.timestamp().to_string(),
-		//    title: article.title,
-		//    content: article.raw_content
-		//};
-		//ttv_index.update_doc(doc2index).unwrap();
+		let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
+		let doc2index = Doc2Index {
+		   article_id: article.id.to_string(),
+		   created_time: article.created_time.timestamp().to_string(),
+		   title: article.title,
+		   content: article.raw_content
+		};
+		ttv_index.update_doc(doc2index).unwrap();
 		res_redirect!(format!("/article?id={}", article.id))
 	    },
 	    Err(_) => {
@@ -262,8 +262,8 @@ impl ArticlePage {
 
 	match Article::delete_by_id(article_id) {
 	    Ok(article) => {
-		//let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
-		//let _ = ttv_index.delete_doc(&article.id.to_string());
+		let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
+		let _ = ttv_index.delete_doc(&article.id.to_string());
 		res_redirect!(format!("/section?id={}", section_id))
 	    },
 	    Err(_) => {
@@ -277,8 +277,8 @@ impl ArticlePage {
 	let params = get_query_params!(req);
 	let article_id = t_param_parse!(params, "article_id", Uuid);
 
-	//let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
-	//let _ = ttv_index.delete_doc(&article_id.to_string());
+	let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
+	let _ = ttv_index.delete_doc(&article_id.to_string());
 	res_redirect!("/")
     }
 

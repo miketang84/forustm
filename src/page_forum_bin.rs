@@ -36,7 +36,7 @@ use rusoda::web_filters;
 use rusoda::rss;
 
 mod middleware;
-//mod tantivy_index;
+mod tantivy_index;
 
 // include page modules
 mod page_forum;
@@ -54,10 +54,10 @@ impl Key for AppUser {
     type Value = Ruser;
 }
 
-//pub struct TtvIndex;
-//impl Key for TtvIndex {
-//    type Value = Arc<Mutex<tantivy_index::TantivyIndex>>;
-//}
+pub struct TtvIndex;
+impl Key for TtvIndex {
+   type Value = Arc<Mutex<tantivy_index::TantivyIndex>>;
+}
 
 
 // define global smock
@@ -101,14 +101,14 @@ fn main () {
     dotenv().ok();
     //
     web_filters::register_web_filters();
-    //let ttv_index = match tantivy_index::init() {
-    //    Ok(ttv_index) => {
-    //        Arc::new(Mutex::new(ttv_index))
-    //    },
-    //    Err(e) => {
-    //        panic!("{:?}", e);
-    //    }
-    //};
+    let ttv_index = match tantivy_index::init() {
+       Ok(ttv_index) => {
+	   Arc::new(Mutex::new(ttv_index))
+       },
+       Err(e) => {
+	   panic!("{:?}", e);
+       }
+    };
 
     let addr = env::var("BINDADDR").expect("DBURL must be set");
     let port = env::var("BINDPORT").expect("REDISURL must be set").parse::<u32>().unwrap();
@@ -116,7 +116,7 @@ fn main () {
     app.address(&addr)
 	.port(port)
 	.init_global(Box::new(move |req: &mut Request| {
-	    //req.ext_mut().insert::<TtvIndex>(ttv_index.clone());
+	    req.ext_mut().insert::<TtvIndex>(ttv_index.clone());
 	    Ok(())
 	}))
 	.with_armor(Box::new(PageForum))

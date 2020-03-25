@@ -1,6 +1,6 @@
 use cang_jie::{CangJieTokenizer, TokenizerOption, CANG_JIE};
 use jieba_rs::Jieba;
-use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index, IndexWriter, Searcher, Document};
+use tantivy::{collector::TopDocs, doc, query::QueryParser, schema::*, Index, IndexReader, IndexWriter, Searcher, Document, ReloadPolicy};
 use tantivy::directory::MmapDirectory;
 use std::{collections::HashSet, io, iter::FromIterator, sync::Arc};
 use std::path::Path;
@@ -33,7 +33,9 @@ pub struct DocFromIndexOuter {
 }
 
 pub struct TantivyIndex {
-    pub index: Index,
+    // pub index: Index,
+    pub schema: Schema,
+    pub reader: IndexReader,
     pub writer: IndexWriter,
     pub query_parser: QueryParser
 }
@@ -44,13 +46,13 @@ pub fn init() -> tantivy::Result<TantivyIndex> {
     let mut schema_builder = SchemaBuilder::default();
 
     let text_indexing = TextFieldIndexing::default()
-        .set_tokenizer(CANG_JIE) // Set custom tokenizer
-        .set_index_option(IndexRecordOption::WithFreqsAndPositions);
+	.set_tokenizer(CANG_JIE) // Set custom tokenizer
+	.set_index_option(IndexRecordOption::WithFreqsAndPositions);
     let text_options = TextOptions::default()
-        .set_indexing_options(text_indexing.clone())
-        .set_stored();
+	.set_indexing_options(text_indexing.clone())
+	.set_stored();
     let text_options_nostored = TextOptions::default()
-        .set_indexing_options(text_indexing);
+	.set_indexing_options(text_indexing);
 
     schema_builder.add_text_field("article_id", STRING | STORED);
     schema_builder.add_text_field("created_time", STRING | STORED);
@@ -69,92 +71,99 @@ pub fn init() -> tantivy::Result<TantivyIndex> {
 
     let query_parser = QueryParser::for_index(&index, vec![title, content]);
 
+    let reader = index
+	.reader_builder()
+	.reload_policy(ReloadPolicy::OnCommit)
+	.try_into()?;
+
     Ok(TantivyIndex {
-        index,
-        writer,
-        query_parser
+	schema: index.schema(),
+	reader,
+	writer,
+	query_parser
     })
 }
 
 impl TantivyIndex {
 
     pub fn add_doc(&mut self, doc: Doc2Index) -> tantivy::Result<()> {
-        let schema = self.index.schema();
+	let schema = &self.schema;
 
-        let article_id = schema.get_field("article_id").unwrap();
-        let created_time = schema.get_field("created_time").unwrap();
-        let title = schema.get_field("title").unwrap();
-        let content = schema.get_field("content").unwrap();
+	let article_id = schema.get_field("article_id").unwrap();
+	let created_time = schema.get_field("created_time").unwrap();
+	let title = schema.get_field("title").unwrap();
+	let content = schema.get_field("content").unwrap();
 
-        let mut a_doc = Document::default();
-        a_doc.add_text(article_id, &doc.article_id);
-        a_doc.add_text(created_time, &doc.created_time);
-        a_doc.add_text(title, &doc.title);
-        a_doc.add_text(content, &doc.content);
-        
-        self.writer.add_document(a_doc);
+	let mut a_doc = Document::default();
+	a_doc.add_text(article_id, &doc.article_id);
+	a_doc.add_text(created_time, &doc.created_time);
+	a_doc.add_text(title, &doc.title);
+	a_doc.add_text(content, &doc.content);
 
-        self.writer.commit()?;
+	self.writer.add_document(a_doc);
 
-        info!("add to tantivy index {:?}", doc.article_id);
+	self.writer.commit()?;
 
-        Ok(())
+	info!("add to tantivy index {:?}", doc.article_id);
+
+	Ok(())
 
     }
 
     pub fn update_doc(&mut self, doc: Doc2Index) -> tantivy::Result<()> {
-        let schema = self.index.schema();
-        let article_id = schema.get_field("article_id").unwrap();
-        let _n = self.writer.delete_term(Term::from_field_text(article_id, &doc.article_id));
+	let schema = &self.schema;
+	let article_id = schema.get_field("article_id").unwrap();
+	let _n = self.writer.delete_term(Term::from_field_text(article_id, &doc.article_id));
 
-        self.writer.commit()?;
+	self.writer.commit()?;
 
-        self.add_doc(doc)
+	self.add_doc(doc)
     }
 
     pub fn delete_doc(&mut self, doc_id: &str) -> tantivy::Result<()> {
-        let schema = self.index.schema();
-        let article_id = schema.get_field("article_id").unwrap();
-        let _n = self.writer.delete_term(Term::from_field_text(article_id, doc_id));
+	let schema = &self.schema;
+	let article_id = schema.get_field("article_id").unwrap();
+	let _n = self.writer.delete_term(Term::from_field_text(article_id, doc_id));
 
-        self.writer.commit()?;
+	self.writer.commit()?;
 
-        Ok(())
+	Ok(())
     }
 
     pub fn query(&self, s: &str) -> tantivy::Result<Vec<DocFromIndexOuter>> {
-        let schema = self.index.schema();
+	let schema = &self.schema;
 
-        self.index.load_searchers()?;
-        let searcher = self.index.searcher();
+	// self.index.load_searchers()?;
+	// let searcher = self.index.searcher();
+	let searcher = self.reader.searcher();
 
-        let q = self.query_parser.parse_query(s)?;
+	let q = self.query_parser.parse_query(s)?;
 
-        let mut top_docs = TopDocs::with_limit(50);
+	let mut top_docs = TopDocs::with_limit(50);
 
-        let doc_addresses = searcher.search(&q, &mut top_docs)?;
+	let doc_addresses = searcher.search(&q, &mut top_docs)?;
 
-        let mut r_vec: Vec<DocFromIndexOuter> = vec![];
-        for (_, doc_address) in doc_addresses {
-            let retrieved_doc = searcher.doc(doc_address)?;
-            let json_str = schema.to_json(&retrieved_doc);
-            let doc_from_index: DocFromIndex = serde_json::from_str(&json_str).unwrap();
-            
-            info!("{:?}", doc_from_index);
-            let created_timestamp: i64 = doc_from_index.created_time[0].parse::<i64>().unwrap();
+	let mut r_vec: Vec<DocFromIndexOuter> = vec![];
+	for (_, doc_address) in doc_addresses {
+	    let retrieved_doc = searcher.doc(doc_address)?;
+	    let json_str = schema.to_json(&retrieved_doc);
+	    let doc_from_index: DocFromIndex = serde_json::from_str(&json_str).unwrap();
 
-            let new_doc = DocFromIndexOuter {
-                article_id: doc_from_index.article_id[0].parse::<Uuid>().unwrap(),
-                created_time: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(created_timestamp, 0), Utc),
-                title: doc_from_index.title[0].to_owned()
-            };
+	    info!("{:?}", doc_from_index);
+	    let created_timestamp: i64 = doc_from_index.created_time[0].parse::<i64>().unwrap();
 
-            r_vec.push(new_doc);
-        }
+	    let new_doc = DocFromIndexOuter {
+		article_id: doc_from_index.article_id[0].parse::<Uuid>().unwrap(),
+		created_time: DateTime::<Utc>::from_utc(NaiveDateTime::from_timestamp(created_timestamp, 0), Utc),
+		title: doc_from_index.title[0].to_owned()
+	    };
 
-        r_vec.sort_by(|a, b| b.created_time.cmp(&a.created_time));
+	    r_vec.push(new_doc);
+	}
 
-        Ok(r_vec)
+	r_vec.sort_by(|a, b| b.created_time.cmp(&a.created_time));
+
+	Ok(r_vec)
     }
 }
 
@@ -162,8 +171,7 @@ impl TantivyIndex {
 
 fn tokenizer() -> CangJieTokenizer {
     CangJieTokenizer {
-        worker: Arc::new(Jieba::empty()), // empty dictionary
-        option: TokenizerOption::Unicode,
+	worker: Arc::new(Jieba::empty()), // empty dictionary
+	option: TokenizerOption::Unicode,
     }
 }
-
