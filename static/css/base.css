@@ -29,10 +29,10 @@ h6 {
 	font-size: 16px;
 }
 
-p, ul {
-	margin: 0;
-	padding: 0;
-}
+/* p, ul { */
+/*	margin: 0; */
+/*	padding: 0; */
+/* } */
 
 ul li {
 	line-height: 24px;
@@ -151,7 +151,7 @@ div.detail-body-wx {
 
 .detail-body p, .comments p {
 	line-height: 24px;
-	padding: 7px 0;
+	/* padding: 7px 0; */
 }
 
 
@@ -171,9 +171,9 @@ div.detail-body-wx {
 }
 */
 
-.detail-body ul {
-	margin: 15px 0 15px 30px;
-}
+/* .detail-body ul { */
+/*	margin: 15px 0 15px 30px; */
+/* } */
 
 .detail-body ul li {
 	list-style-type: disc;
