@@ -223,6 +223,10 @@ div.detail-body-wx {
 	font-size: 16px;
 }
 
+.article-list ul {
+    padding-left: 0;
+}
+
 .article-list li a.title:link {
 	color: blue;
 }
