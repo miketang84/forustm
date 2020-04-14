@@ -57,8 +57,8 @@ cn = "博客星球"
 en = "Blog Planet"
 
 [learn_notes]
-cn = "Rust学习笔记"
-en = "Rust Study Notes"
+cn = "学习笔记"
+en = "Study Notes"
 
 [sections]
 cn = "版块分类"
