@@ -33,8 +33,8 @@ cn = "首页"
 en = "Index"
 
 [write_blog]
-cn = "写博客"
-en = "Write Blog"
+cn = "写笔记"
+en = "Write Notes"
 
 [post_article]
 cn = "发帖子"
@@ -81,8 +81,8 @@ cn = "返回版块"
 en = "Return To Section"
 
 [return_blog]
-cn = "返回博客"
-en = "Return To Blog"
+cn = "返回我的博客"
+en = "Return To My Blog"
 
 [posted_at]
 cn = "发表于"
@@ -161,8 +161,8 @@ cn = "编辑帖子"
 en = "Edit Article"
 
 [edit_blog_article]
-cn = "编辑博客"
-en = "Edit Blog Article"
+cn = "编辑笔记"
+en = "Edit Note"
 
 [input_title_prompt]
 cn = "这里输入标题"
@@ -209,8 +209,8 @@ cn = "新建帖子"
 en = "New Article"
 
 [new_blog_post]
-cn = "发表博文"
-en = "New blog post"
+cn = "写笔记"
+en = "New Note"
 
 [new_comment]
 cn = "新评论"
