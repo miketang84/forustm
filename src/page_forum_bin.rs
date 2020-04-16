@@ -75,8 +75,10 @@ impl SapperArmor for PageForum {
 		// using this cookie to retreive user instance
 		match Ruser::get_user_by_cookie(&cookie) {
 		    Ok(user) => {
-			web.insert("user", &user);
-			req.ext_mut().insert::<AppUser>(user);
+                        if user.status == 0 {
+			    web.insert("user", &user);
+			    req.ext_mut().insert::<AppUser>(user);
+                        }
 		    },
 		    Err(_) => {}
 		}
