@@ -1,13 +1,13 @@
 #[macro_use] extern crate log;
 #[macro_use]
 extern crate serde_derive;
-use std::env;
+use std::{env, thread};
 use env_logger;
 use dotenv::dotenv;
 use rusoda;
 use serde;
 use serde_json;
-
+use crossbeam::channel;
 
 use std::sync::{
     Arc,
@@ -42,6 +42,10 @@ mod tantivy_index;
 mod page_forum;
 
 use self::dataservice::user::Ruser;
+use self::tantivy_index::{
+    DocFromIndexOuter, TanAction, Doc2Index,
+};
+
 
 
 pub struct AppWebContext;
@@ -54,9 +58,13 @@ impl Key for AppUser {
     type Value = Ruser;
 }
 
-pub struct TtvIndex;
-impl Key for TtvIndex {
-   type Value = Arc<Mutex<tantivy_index::TantivyIndex>>;
+pub struct TanIndexTx;
+impl Key for TanIndexTx {
+   type Value = channel::Sender<(TanAction, String, Option<Doc2Index>)>;
+}
+pub struct TanQueryRx;
+impl Key for TanQueryRx {
+   type Value = channel::Receiver<Vec<DocFromIndexOuter>>;
 }
 
 
@@ -65,36 +73,36 @@ struct PageForum;
 
 impl SapperArmor for PageForum {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-	// define cookie prefix
-	sapper_std::init(req, Some("rusoda_session"))?;
-	// init web instance state
-	let mut web = WebContext::new();
-	// we can add something to web
-	match req.ext().get::<SessionVal>() {
-	    Some(cookie) => {
-		// using this cookie to retreive user instance
-		match Ruser::get_user_by_cookie(&cookie) {
-		    Ok(user) => {
+        // define cookie prefix
+        sapper_std::init(req, Some("rusoda_session"))?;
+        // init web instance state
+        let mut web = WebContext::new();
+        // we can add something to web
+        match req.ext().get::<SessionVal>() {
+            Some(cookie) => {
+                // using this cookie to retreive user instance
+                match Ruser::get_user_by_cookie(&cookie) {
+                    Ok(user) => {
                         if user.status == 0 {
-			    web.insert("user", &user);
-			    req.ext_mut().insert::<AppUser>(user);
+                            web.insert("user", &user);
+                            req.ext_mut().insert::<AppUser>(user);
                         }
-		    },
-		    Err(_) => {}
-		}
-	    },
-	    None => {}
-	}
+                    },
+                    Err(_) => {}
+                }
+            },
+            None => {}
+        }
 
-	// insert it to req
-	req.ext_mut().insert::<AppWebContext>(web);
+        // insert it to req
+        req.ext_mut().insert::<AppWebContext>(web);
 
-	Ok(())
+        Ok(())
     }
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
-	sapper_std::finish(req, res)?;
-	Ok(())
+        sapper_std::finish(req, res)?;
+        Ok(())
     }
 }
 
@@ -103,31 +111,32 @@ fn main () {
     dotenv().ok();
     //
     web_filters::register_web_filters();
-    let ttv_index = match tantivy_index::init() {
-       Ok(ttv_index) => {
-	   Arc::new(Mutex::new(ttv_index))
-       },
-       Err(e) => {
-	   panic!("{:?}", e);
-       }
-    };
+
+    // create first pair channel: send directive
+    let (tan_index_tx, tan_index_rx) = channel::unbounded::<(TanAction, String, Option<Doc2Index>)>();
+    // create query result pair channel
+    let (tan_query_tx, tan_query_rx) = channel::unbounded::<Vec<DocFromIndexOuter>>();
+
+    tantivy_index::run_tantivy(tan_index_rx, tan_query_tx);
 
     let addr = env::var("BINDADDR").expect("DBURL must be set");
     let port = env::var("BINDPORT").expect("REDISURL must be set").parse::<u32>().unwrap();
     let mut app = SapperApp::new();
     app.address(&addr)
-	.port(port)
-	.init_global(Box::new(move |req: &mut Request| {
-	    req.ext_mut().insert::<TtvIndex>(ttv_index.clone());
-	    Ok(())
-	}))
-	.with_armor(Box::new(PageForum))
-	.add_module(Box::new(page_forum::index_page::IndexPage))
-	.add_module(Box::new(page_forum::user_page::UserPage))
-	.add_module(Box::new(page_forum::section_page::SectionPage))
-	.add_module(Box::new(page_forum::article_page::ArticlePage))
-	.add_module(Box::new(page_forum::comment_page::CommentPage))
-	.static_file_service(true);
+        .port(port)
+        .init_global(Box::new(move |req: &mut Request| {
+            req.ext_mut().insert::<TanIndexTx>(tan_index_tx.clone());
+            req.ext_mut().insert::<TanQueryRx>(tan_query_rx.clone());
+
+            Ok(())
+        }))
+        .with_armor(Box::new(PageForum))
+        .add_module(Box::new(page_forum::index_page::IndexPage))
+        .add_module(Box::new(page_forum::user_page::UserPage))
+        .add_module(Box::new(page_forum::section_page::SectionPage))
+        .add_module(Box::new(page_forum::article_page::ArticlePage))
+        .add_module(Box::new(page_forum::comment_page::CommentPage))
+        .static_file_service(true);
 
     println!("Start listen on http://{}:{}", addr, port);
     app.run_http();

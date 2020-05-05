@@ -20,8 +20,8 @@ use crate::envconfig;
 use crate::dataservice::article::Article;
 use crate::dataservice::section::Section;
 
-use crate::TtvIndex;
-use crate::tantivy_index::{DocFromIndexOuter, Doc2Index};
+use crate::{TanIndexTx, TanQueryRx};
+use crate::tantivy_index::{DocFromIndexOuter, Doc2Index, TanAction};
 use crate::middleware::{
     permission_need_be_admin,
     check_cache_switch
@@ -32,83 +32,90 @@ pub struct IndexPage;
 impl IndexPage {
 
     pub fn index(req: &mut Request) -> SapperResult<Response> {
-	let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
 
-	let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
-	let articles = Article::get_latest_articles(napp);
+        let napp = envconfig::get_int_item("NUMBER_ARTICLE_PER_PAGE");
+        let articles = Article::get_latest_articles(napp);
 
-	let reply_articles = Article::get_latest_reply_articles(napp);
+        let reply_articles = Article::get_latest_reply_articles(napp);
 
-	let blog_articles = Article::get_latest_blog_articles(napp);
+        let blog_articles = Article::get_latest_blog_articles(napp);
 
-	// get all configured index displaying sections
-	// and latest commented three articles
-	let sections = Section::forum_sections();
+        // get all configured index displaying sections
+        // and latest commented three articles
+        let sections = Section::forum_sections();
 
-	web.insert("articles", &articles);
-	web.insert("reply_articles", &reply_articles);
-	web.insert("blog_articles", &blog_articles);
-	web.insert("sections", &sections);
+        web.insert("articles", &articles);
+        web.insert("reply_articles", &reply_articles);
+        web.insert("blog_articles", &blog_articles);
+        web.insert("sections", &sections);
 
-	res_html!("forum/index.html", web)
+        res_html!("forum/index.html", web)
     }
 
     pub fn rss_xml(req: &mut Request) -> SapperResult<Response> {
-	let rss_string = rss::make_rss_feed();
+        let rss_string = rss::make_rss_feed();
 
-	res_xml_string!(rss_string)
+        res_xml_string!(rss_string)
     }
 
     pub fn search_query_page(req: &mut Request) -> SapperResult<Response> {
-	let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
 
-	let params = get_query_params!(req);
-	let q = t_param_default!(params, "q", "");
+        let params = get_query_params!(req);
+        let q = t_param_default!(params, "q", "");
 
-	let mut docs: Vec<DocFromIndexOuter> = Vec::new();
-	if q != "" {
-	    let ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
-	    docs = ttv_index.query(q).unwrap();
-	}
+        let mut docs: Vec<DocFromIndexOuter> = Vec::new();
+        if q != "" {
+            let tan_index = get_ext!(req, TanIndexTx).unwrap();
+            // send query directive
+            tan_index.send((TanAction::Query, q.to_string(), None)).unwrap();
 
-	web.insert("docs", &docs);
-	web.insert("q", q);
+            let tan_query = get_ext!(req, TanQueryRx).unwrap();
+            // block receiving
+            docs = tan_query.recv().unwrap();
+        }
 
-	res_html!("forum/search_result.html", web)
+        web.insert("docs", &docs);
+        web.insert("q", q);
+
+        res_html!("forum/search_result.html", web)
     }
 
     pub fn search_query(req: &mut Request) -> SapperResult<Response> {
-	let params = get_form_params!(req);
-	let q = t_param!(params, "q");
+        let params = get_form_params!(req);
+        let q = t_param!(params, "q");
 
-	res_redirect!(format!("/search?q={}", q))
+        res_redirect!(format!("/search?q={}", q))
     }
 
     pub fn makeindex(req: &mut Request) -> SapperResult<Response> {
-	permission_need_be_admin(req)?;
-	let mut ttv_index = get_ext!(req, TtvIndex).unwrap().lock().unwrap();
+        permission_need_be_admin(req)?;
 
-	let articles = Article::get_all_articles();
+        let tan_index = get_ext!(req, TanIndexTx).unwrap();
 
-	for article in articles {
-	    let doc2index = Doc2Index {
-		article_id: article.id.to_string(),
-		created_time: article.created_time.timestamp().to_string(),
-		title: article.title,
-		content: article.raw_content
-	    };
-	    ttv_index.add_doc(doc2index).unwrap();
-	}
+        let articles = Article::get_all_articles();
 
-	info!("Make index test finished.");
+        for article in articles {
+            let doc2index = Doc2Index {
+                article_id: article.id.to_string(),
+                created_time: article.created_time.timestamp().to_string(),
+                title: article.title,
+                content: article.raw_content
+            };
+            // send query directive
+            tan_index.send((TanAction::Add, "".to_string(), Some(doc2index))).unwrap();
+        }
 
-	res_redirect!("/search")
+        info!("Make index test finished.");
+
+        res_redirect!("/search")
     }
 
     pub fn acknowledgement(req: &mut Request) -> SapperResult<Response> {
-	let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
 
-	res_html!("forum/acknowledgement.html", web)
+        res_html!("forum/acknowledgement.html", web)
     }
 
 
@@ -118,44 +125,44 @@ impl IndexPage {
 
 impl SapperModule for IndexPage {
     fn before(&self, req: &mut Request) -> SapperResult<()> {
-	let (path, _) = req.uri();
-	if check_cache_switch(req) {
-	    if &path == "/" {
-		if cache::cache_is_valid("index", "index") {
-		    let cache_content = cache::cache_get("index", "index");
+        let (path, _) = req.uri();
+        if check_cache_switch(req) {
+            if &path == "/" {
+                if cache::cache_is_valid("index", "index") {
+                    let cache_content = cache::cache_get("index", "index");
 
-		    splog(req, status::Ok).unwrap();
-		    return res_html_before!(cache_content);
-		}
-	    }
-	}
+                    splog(req, status::Ok).unwrap();
+                    return res_html_before!(cache_content);
+                }
+            }
+        }
 
-	Ok(())
+        Ok(())
     }
 
     fn after(&self, req: &Request, res: &mut Response) -> SapperResult<()> {
-	let (path, _) = req.uri();
-	if &path == "/" {
-	    if !cache::cache_is_valid("index", "index") {
-		cache::cache_set("index", "index", res.body());
-	    }
-	}
+        let (path, _) = req.uri();
+        if &path == "/" {
+            if !cache::cache_is_valid("index", "index") {
+                cache::cache_set("index", "index", res.body());
+            }
+        }
 
-	Ok(())
+        Ok(())
     }
 
 
     fn router(&self, router: &mut SapperRouter) -> SapperResult<()> {
-	router.get("/", Self::index);
-	router.get("/rss", Self::rss_xml);
-	router.get("/search", Self::search_query_page);
-	router.post("/search", Self::search_query);
-	router.get("/acknowledgement", Self::acknowledgement);
+        router.get("/", Self::index);
+        router.get("/rss", Self::rss_xml);
+        router.get("/search", Self::search_query_page);
+        router.post("/search", Self::search_query);
+        router.get("/acknowledgement", Self::acknowledgement);
 
-	// need to be limited call by admin only
-	router.get("/makeindex", Self::makeindex);
+        // need to be limited call by admin only
+        router.get("/makeindex", Self::makeindex);
 
 
-	Ok(())
+        Ok(())
     }
 }
