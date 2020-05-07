@@ -205,20 +205,20 @@ pub fn run_tantivy(tan_index_rx: Receiver<(TanAction, String, Option<Doc2Index>)
 		    match action {
 			TanAction::Add => {
 			    if doc.is_some() {
-				ttv_index.add_doc(doc.unwrap()).unwrap();
+				let _ = ttv_index.add_doc(doc.unwrap());
 			    }
 			},
 			TanAction::Update => {
 			    if doc.is_some() {
-				ttv_index.update_doc(doc.unwrap()).unwrap();
+				let _ = ttv_index.update_doc(doc.unwrap());
 			    }
 			},
 			TanAction::Delete => {
 			    let _ = ttv_index.delete_doc(&head_data);
 			},
 			TanAction::Query => {
-			    let docs = ttv_index.query(&head_data).unwrap();
-			    tan_query_tx.send(docs).unwrap();
+			    let docs = ttv_index.query(&head_data).unwrap_or(Vec::new());
+			    let _ = tan_query_tx.send(docs);
 			}
 		    }
 		},
