@@ -20,7 +20,7 @@
 	    {% for article in articles %}
 	    <li>
 		<span class="left">
-		    <a href="/article?id={{ article.id }}" class="title left">{{ article.title }}</a>
+		    <a href="/article?id={{ article.id }}" class="title left">{{ article.title }} - {{article.section_title}}</a>
 		    <div style="clear:both;"></div>
 		</span>
 		<span class="right info">
