@@ -1,0 +1,52 @@
+{% extends "forum/base.html" %}
+
+{% block title %}
+{{ s_title }} - {{"title"|i18n}}
+{% endblock title %}
+
+{% block content %}
+<div class="body-content">
+    <div class="detail-head">
+	<div>
+	    <h3>{{ s_title }}</h3>
+	</div>
+    </div>
+
+    <div class="section-body article-list">
+	{% if articles | length == 0 %}
+	    <p class="">{{"no_content"|i18n}}</p>
+	{% else %}
+	<ul>
+	    {% for article in articles %}
+	    <li>
+		<span class="left">
+		    <a href="/article?id={{ article.id }}" class="title left">{{ article.title }}</a>
+		    <div style="clear:both;"></div>
+		</span>
+		<span class="right info">
+		    <span class="author">{{ article.author_name }}</span>
+		    <span class="timestamp">{{ article.created_time | zone8 }}</span>
+		    {% if is_admin %}
+		    <a class="delete" href="/p/article/delete?id={{article.id}}">{{"delete"|i18n}}</a>
+		    <a class="edit" href="/p/article/edit?id={{article.id}}">{{"edit"|i18n}}</a>
+		    {% endif %}
+		</span>
+		<div style="clear:both;"></div>
+	    </li>
+	    {% endfor %}
+	</ul>
+	{% endif %}
+    </div>
+
+    <div class="paginator right">
+	{% for _ in range(end=total_page) %}
+	<a href="/{{this_page_url}}?current_page={{loop.index}}"
+	    {% if loop.index==current_page %} class="current_page" {% endif %}>
+	    {{ loop.index }}
+	</a>
+	{% endfor %}
+	{{"totally"|i18n}} {{ total_item }} {{"articles"|i18n}}, {{ total_page }} {{"page"|i18n}}
+    </div>
+    <div style="clear:both;"></div>
+</div>
+{% endblock content %}

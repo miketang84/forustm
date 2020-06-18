@@ -34,6 +34,9 @@ use crate::dataservice::user::{
     UserChangePassword,
 };
 
+use crate::dataservice::article::{
+    Article
+};
 
 pub struct UserPage;
 
@@ -259,6 +262,48 @@ impl UserPage {
         }
     }
 
+    pub fn user_my_articles_page(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let params = get_query_params!(req);
+
+        let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+
+        let mut is_admin = false;
+        let mut is_login = false;
+        let mut user_id: Uuid = Default::default();
+        match get_ext!(req, AppUser) {
+            Some(user) => {
+                user_id = user.id;
+
+                if user.role >= 9 {
+                    is_admin = true;
+                }
+
+                is_login = true;
+                web.insert("is_login", &is_login);
+                web.insert("user", &user);
+            },
+            None => {}
+        }
+
+        let napp = envconfig::get_int_item("BIG_NUMBER_ARTICLE_PER_PAGE");
+        let total_item = Article::get_all_articles_count_by_author(user_id);
+        let total_page = ((total_item - 1) / napp) as i64 + 1;
+
+        let articles = Article::get_latest_articles_paging_by_author(user_id, current_page-1, napp);
+
+        web.insert("is_admin", &is_admin);
+        web.insert("total_item", &total_item);
+        web.insert("total_page", &total_page);
+        web.insert("current_page", &current_page);
+        web.insert("articles", &articles);
+        web.insert("this_page_url", "p/user/my_articles");
+        web.insert("s_title", "User's Articles");
+
+        res_html!("forum/article_list_paging.html", web)
+    }
+
+
 }
 
 
@@ -275,6 +320,7 @@ impl SapperModule for UserPage {
         router.get("/account", Self::account);
         router.get("/signout", Self::user_signout);
 
+
         router.post("/register", Self::user_register);
         router.post("/login", Self::user_login);
 
@@ -283,6 +329,8 @@ impl SapperModule for UserPage {
 
         router.get("/p/user/changepassword", Self::user_changepassword_page);
         router.post("/s/user/changepassword", Self::user_changepassword);
+
+        router.get("/p/user/my_articles", Self::user_my_articles_page);
 
 
         // this url will be called by remote github oauth2 server

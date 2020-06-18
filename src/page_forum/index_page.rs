@@ -12,7 +12,7 @@ use log::info;
 use crate::db;
 // introduce macros
 use sapper_std::res_html;
-use crate::AppWebContext;
+use crate::{AppWebContext, AppUser};
 use crate::cache;
 use crate::rss;
 
@@ -118,7 +118,119 @@ impl IndexPage {
         res_html!("forum/acknowledgement.html", web)
     }
 
+    pub fn latest_articles_paging(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let params = get_query_params!(req);
 
+        let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+
+        let mut is_admin = false;
+        let mut is_login = false;
+        match get_ext!(req, AppUser) {
+            Some(user) => {
+                if user.role >= 9 {
+                    is_admin = true;
+                }
+
+                is_login = true;
+                web.insert("is_login", &is_login);
+                web.insert("user", &user);
+            },
+            None => {}
+        }
+
+        let napp = envconfig::get_int_item("BIG_NUMBER_ARTICLE_PER_PAGE");
+        let total_item = Article::get_all_section_articles_count();
+        let total_page = ((total_item - 1) / napp) as i64 + 1;
+
+        let articles = Article::get_latest_articles_paging(current_page-1, napp);
+
+        web.insert("is_admin", &is_admin);
+        web.insert("total_item", &total_item);
+        web.insert("total_page", &total_page);
+        web.insert("current_page", &current_page);
+        web.insert("articles", &articles);
+        web.insert("this_page_url", "latest_articles_paging");
+        web.insert("s_title", "Latest Articles");
+
+        res_html!("forum/article_list_paging.html", web)
+    }
+
+    pub fn latest_reply_articles_paging(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let params = get_query_params!(req);
+
+        let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+
+        let mut is_admin = false;
+        let mut is_login = false;
+        match get_ext!(req, AppUser) {
+            Some(user) => {
+                if user.role >= 9 {
+                    is_admin = true;
+                }
+
+                is_login = true;
+                web.insert("is_login", &is_login);
+                web.insert("user", &user);
+            },
+            None => {}
+        }
+
+        let napp = envconfig::get_int_item("BIG_NUMBER_ARTICLE_PER_PAGE");
+        let total_item = Article::get_all_section_articles_count();
+        let total_page = ((total_item - 1) / napp) as i64 + 1;
+
+        let articles = Article::get_latest_reply_articles_paging(current_page-1, napp);
+
+        web.insert("is_admin", &is_admin);
+        web.insert("total_item", &total_item);
+        web.insert("total_page", &total_page);
+        web.insert("current_page", &current_page);
+        web.insert("articles", &articles);
+        web.insert("this_page_url", "latest_reply_articles_paging");
+        web.insert("s_title", "Latest Articles On Reply");
+
+        res_html!("forum/article_list_paging.html", web)
+    }
+
+    pub fn latest_blog_articles_paging(req: &mut Request) -> SapperResult<Response> {
+        let mut web = get_ext_owned!(req, AppWebContext).unwrap();
+        let params = get_query_params!(req);
+
+        let current_page = t_param_parse_default!(params, "current_page", i64, 1);
+
+        let mut is_admin = false;
+        let mut is_login = false;
+        match get_ext!(req, AppUser) {
+            Some(user) => {
+                if user.role >= 9 {
+                    is_admin = true;
+                }
+
+                is_login = true;
+                web.insert("is_login", &is_login);
+                web.insert("user", &user);
+            },
+            None => {}
+        }
+
+        let napp = envconfig::get_int_item("BIG_NUMBER_ARTICLE_PER_PAGE");
+        let total_item = Article::get_all_blog_articles_count();
+        let total_page = ((total_item - 1) / napp) as i64 + 1;
+
+        let articles = Article::get_latest_blog_articles_paging(current_page-1, napp);
+
+        web.insert("is_admin", &is_admin);
+        web.insert("total_item", &total_item);
+        web.insert("total_page", &total_page);
+        web.insert("current_page", &current_page);
+        web.insert("articles", &articles);
+        web.insert("this_page_url", "latest_blog_articles_paging");
+        web.insert("s_title", "Latest Notes");
+
+        res_html!("forum/article_list_paging.html", web)
+    }
 
 }
 
@@ -154,6 +266,10 @@ impl SapperModule for IndexPage {
 
     fn router(&self, router: &mut SapperRouter) -> SapperResult<()> {
         router.get("/", Self::index);
+        router.get("/latest_articles_paging", Self::latest_articles_paging);
+        router.get("/latest_reply_articles_paging", Self::latest_reply_articles_paging);
+        router.get("/latest_blog_articles_paging", Self::latest_blog_articles_paging);
+
         router.get("/rss", Self::rss_xml);
         router.get("/search", Self::search_query_page);
         router.post("/search", Self::search_query);
