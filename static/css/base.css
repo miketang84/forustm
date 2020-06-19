@@ -29,6 +29,11 @@ h6 {
 	font-size: 16px;
 }
 
+hr {
+	border: 0;
+	border-top: 1px dotted gray;
+}
+
 /* p, ul { */
 /*	margin: 0; */
 /*	padding: 0; */
