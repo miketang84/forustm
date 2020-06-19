@@ -325,7 +325,7 @@ div.detail-body-wx {
 
 
 .comments {
-	border-top: 1px dashed gray;
+	border-top: 2px solid #eee;
 }
 
 .comments .item {
