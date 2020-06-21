@@ -8,7 +8,7 @@
 
 <div class="body-content">
 	<h3>
-		{{"new_comment"|i18n}}	
+		{{"new_comment"|i18n}}
 	</h3>
 	<p class="new-reply"> {{"new_reply_prompt"|i18n}}<br>
 		<span class="article-title">《{{article.title}}》</span>
@@ -21,11 +21,11 @@
 		<textarea name="raw_content" placeholder="{{"input_content_prompt"|i18n}}" autofocus>
 
 {% if reply_comment %}
---  
-👇  
-{{reply_comment.raw_content}}  
+--
+👇
+{{reply_comment.nickname}}: {{reply_comment.raw_content}}
 {% endif %}</textarea>
-		<br> 
+		<br>
 		<input type="submit" value="{{"biu"|i18n}}"></input>
 	</form>
 </div>
