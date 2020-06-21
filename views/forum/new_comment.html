@@ -20,8 +20,10 @@
 		{% endif %}
 		<textarea name="raw_content" placeholder="{{"input_content_prompt"|i18n}}" autofocus>
 {% if reply_comment %}
-{{"to_content_prompt"|i18n}}
-<pre>{{reply_comment.raw_content}}</pre>
+{{"to_content_prompt"|i18n}}  
+--vvvvvvv--  
+{{reply_comment.raw_content}}  
+--^^^^^^^--
 {% endif %}
 </textarea>
 		<br> 
