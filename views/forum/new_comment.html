@@ -19,11 +19,12 @@
 		<input type="hidden" name="reply_comment_id" value="{{reply_comment.id}}">
 		{% endif %}
 		<textarea name="raw_content" placeholder="{{"input_content_prompt"|i18n}}" autofocus>
+
 {% if reply_comment %}
-{{"to_content_prompt"|i18n}}  
-👇👇👇  
+-- 
+👇  
 {{reply_comment.raw_content}}  
-👆👆👆
+👆
 {% endif %}
 </textarea>
 		<br> 
