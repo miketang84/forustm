@@ -76,6 +76,7 @@
 		    <span class="created-time">{{ comment.created_time | zone8 }}</span>
 		    {% if is_login and user.id == comment.author_id or is_admin %}
 		    <a class="delete" href="/p/comment/delete?id={{comment.id}}">{{"delete"|i18n}}</a>
+		    <a class="edit" href="/p/comment/edit?comment_id={{comment.id}}&article_id={{article.id}}">{{"edit"|i18n}}</a>
 		    {% endif %}
 		    {% if is_login %}
 		    <a class="reply" href="/p/comment/new?reply_comment_id={{comment.id}}&article_id={{article.id}}">{{"reply"|i18n}}</a>
