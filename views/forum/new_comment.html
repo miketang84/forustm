@@ -21,9 +21,8 @@
 		<textarea name="raw_content" placeholder="{{"input_content_prompt"|i18n}}" autofocus>
 
 {% if reply_comment %}
---  
-👇  
-{{reply_comment.nickname}}: {{reply_comment.content}}
+---  
+{{reply_comment}}
 {% endif %}</textarea>
 		<br>
 		<input type="submit" value="{{"biu"|i18n}}"></input>

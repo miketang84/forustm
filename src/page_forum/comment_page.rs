@@ -46,7 +46,11 @@ impl CommentPage {
             let reply_comment_id = t_param_parse!(params, "reply_comment_id", Uuid);
             match Comment::get_comment_with_author_name(reply_comment_id) {
                 Ok(comment) => {
-                    web.insert("reply_comment", &comment);
+                    let reply_comment:String = 
+                        format!("{}: {}", comment.nickname, comment.content)
+                        .lines()
+                        .fold("".to_string(), |acc, line| acc + ">" + line + "\r\n")
+                    web.insert("reply_comment", reply_comment);
 
                     match Article::get_by_id(article_id) {
                         Ok(article) => {
