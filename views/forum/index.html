@@ -6,128 +6,130 @@
 
 {% block content %}
 <div class="body-content">
-    <div class="action_area">
-	    <a class="right new-article" href="/p/blogarticle/create">{{"write_blog"|i18n}}</a>
-	    <a class="right new-article" href="/p/article/create">{{"post_article"|i18n}}</a>
-	<div style="clear:both;"></div>
-    </div>
+  <div class="action_area">
+    <a class="right new-article" href="/p/blogarticle/create">{{"write_blog"|i18n}}</a>
+    <a class="right new-article" href="/p/article/create">{{"post_article"|i18n}}</a>
+    <div style="clear:both;"></div>
+  </div>
 
-    <div class="article-list-section">
-	<div class="article-list-head head">
-		<span><a href="/latest_articles_paging">{{"latest_articles"|i18n}}</a></span>
-	</div>
-	{% if articles | length  == 0 %}
-	<p>{{"no_content"|i18n}}</p>
-	{% else %}
-	<div class="article-list-container container article-list">
-	    <ul>
-	    {% for article in articles %}
-		<li>
-		    <a href="/article?id={{ article.id }}" class="title">
-			{{ article.title }} -
-			{{article.section_title}}
-		    </a>
-		    <span class="right">
-			<span class="author">{{ article.author_name }}</span>
-			<span class="timestamp ">{{article.created_time | zone8}}</span>
-		    </span>
-		</li>
-	    {% endfor %}
-	    </ul>
-	</div>
-	{% endif %}
-	<div style="clear:both;"></div>
+  <div class="article-list-section">
+    <div class="article-list-head head">
+      <span><a href="/latest_articles_paging">{{"latest_articles"|i18n}}</a></span>
     </div>
+    {% if articles | length == 0 %}
+    <p>{{"no_content"|i18n}}</p>
+    {% else %}
+    <div class="article-list-container container article-list">
+      <ul>
+        {% for article in articles %}
+        <li>
+          <a href="/article?id={{ article.id }}" class="title">
+            <span class="content">{{article.title}}</span>
+            <span class="tag">{{article.section_title}}</span>
+          </a>
+          <span class="right">
+            <span class="author">{{ article.author_name }}</span>
+            <span>•</span>
+            <span class="timestamp ">{{article.created_time | zone8}}</span>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <div style="clear:both;"></div>
+  </div>
 
-    <div class="article-list-section">
-	<div class="article-list-head head">
-		<span><a href="/latest_reply_articles_paging">{{"latest_reply_articles"|i18n}}</a></span>
-	</div>
-	{% if reply_articles | length  == 0 %}
-	<p>{{"no_content"|i18n}}</p>
-	{% else %}
-	<div class="article-list-container container article-list">
-	    <ul>
-	    {% for article in reply_articles %}
-		<li>
-		    <a href="/article?id={{ article.id }}" class="title">
-			{{ article.title }} -
-			{{article.section_title}}
-		    </a>
-		    <span class="right">
-			<span class="author">{{ article.author_name }}</span>
-			<span class="timestamp ">{{article.created_time | zone8}}</span>
-		    </span>
-		</li>
-	    {% endfor %}
-	    </ul>
-	</div>
-	{% endif %}
-	<div style="clear:both;"></div>
+  <div class="article-list-section">
+    <div class="article-list-head head">
+      <span><a href="/latest_reply_articles_paging">{{"latest_reply_articles"|i18n}}</a></span>
     </div>
+    {% if reply_articles | length == 0 %}
+    <p>{{"no_content"|i18n}}</p>
+    {% else %}
+    <div class="article-list-container container article-list">
+      <ul>
+        {% for article in reply_articles %}
+        <li>
+          <a href="/article?id={{ article.id }}" class="title">
+            {{ article.title }} -
+            {{article.section_title}}
+          </a>
+          <span class="right">
+            <span class="author">{{ article.author_name }}</span>
+            <span class="timestamp ">{{article.created_time | zone8}}</span>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <div style="clear:both;"></div>
+  </div>
 
-    <!-- Member Blog Planet Space -->
-    <div class="planet-space-section">
-	<div class="planet-space-head head">
-		<span><a href="/latest_blog_articles_paging">{{"learn_notes"|i18n}}</a></span>
-	</div>
-	{% if blog_articles | length == 0 %}
-	<p>{{"no_content"|i18n}}</p>
-	{% else %}
-	<div class="planet-space-container container article-list">
-	    <ul>
-	    {% for blog_article in blog_articles %}
-		<li>
-		    <a href="/article?id={{ blog_article.id }}" class="title">{{ blog_article.author_name }}：{{ blog_article.title }}</a>
-		    <span class="right">
-			<span class="author">{{ blog_article.author_name }}</span>
-			<span class="timestamp">{{blog_article.created_time | zone8}}</span>
-		    </span>
-		</li>
-	    {% endfor %}
-	    </ul>
-	</div>
-	{% endif %}
-	<div style="clear:both;"></div>
+  <!-- Member Blog Planet Space -->
+  <div class="planet-space-section">
+    <div class="planet-space-head head">
+      <span><a href="/latest_blog_articles_paging">{{"learn_notes"|i18n}}</a></span>
     </div>
+    {% if blog_articles | length == 0 %}
+    <p>{{"no_content"|i18n}}</p>
+    {% else %}
+    <div class="planet-space-container container article-list">
+      <ul>
+        {% for blog_article in blog_articles %}
+        <li>
+          <a href="/article?id={{ blog_article.id }}" class="title">{{ blog_article.author_name }}：{{ blog_article.title
+            }}</a>
+          <span class="right">
+            <span class="author">{{ blog_article.author_name }}</span>
+            <span class="timestamp">{{blog_article.created_time | zone8}}</span>
+          </span>
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% endif %}
+    <div style="clear:both;"></div>
+  </div>
 
-    <div class="category-list-section">
-	<div class="category-space-head head">
-		<span>{{"sections"|i18n}}</span>
-	</div>
-	{% if sections | length  == 0 %}
-	<p>{{"no_content"|i18n}}</p>
-	{% else %}
-	<div class="category-list-container container">
-	    <ul>
-	    {% for sec in sections %}
-		<li>
-		    <a href="/section?id={{ sec.id }}">{{ sec.title }}</a>
-		</li>
-	    {% endfor %}
-	    </ul>
-	    <div style="clear:both;"></div>
-	</div>
-	{% endif %}
+  <div class="category-list-section">
+    <div class="category-space-head head">
+      <span>{{"sections"|i18n}}</span>
     </div>
+    {% if sections | length == 0 %}
+    <p>{{"no_content"|i18n}}</p>
+    {% else %}
+    <div class="category-list-container container">
+      <ul>
+        {% for sec in sections %}
+        <li>
+          <a href="/section?id={{ sec.id }}">{{ sec.title }}</a>
+        </li>
+        {% endfor %}
+      </ul>
+      <div style="clear:both;"></div>
+    </div>
+    {% endif %}
+  </div>
 
-    <div class="most-links-section">
-	<div class="links-section-head head">
-		<span>{{"most_links"|i18n}}</span>
-	</div>
-	<div class="container">
-	    <ul>
-	      <li><a href="https://mp.weixin.qq.com/s/aRGY6oLXVQzxbb1wb3RGcA">Rust 语言新手指南</a></li>
-	      <li><a href="https://kaisery.github.io/trpl-zh-cn/foreword.html">Rust 程序设计语言（网络中文翻译）</a></li>
-	      <li><a href="/article?id=ed7c9379-d681-47cb-9532-0db97d883f62">Rust 语言中文社区公众账号</a></li>
-	      <li><a href="https://rust-lang.org">rust-lang.org</a></li>
-	      <li><a href="https://this-week-in-rust.org">This Week in Rust</a></li>
-	      <li><a href="https://doc.rust-lang.org/std/index.html">Rust 标准库 API 文档</a></li>
-	      <li><a href="https://doc.rust-lang.org/stable/rust-by-example/">Rust By Example</a></li>
-	      <li><a href="https://cheats.rs">Rust 单页手册</a></li>
-	    </ul>
-	    <div style="clear:both;"></div>
-	</div>
+  <div class="most-links-section">
+    <div class="links-section-head head">
+      <span>{{"most_links"|i18n}}</span>
     </div>
+    <div class="container">
+      <ul>
+        <li><a href="https://mp.weixin.qq.com/s/aRGY6oLXVQzxbb1wb3RGcA">Rust 语言新手指南</a></li>
+        <li><a href="https://kaisery.github.io/trpl-zh-cn/foreword.html">Rust 程序设计语言（网络中文翻译）</a></li>
+        <li><a href="/article?id=ed7c9379-d681-47cb-9532-0db97d883f62">Rust 语言中文社区公众账号</a></li>
+        <li><a href="https://rust-lang.org">rust-lang.org</a></li>
+        <li><a href="https://this-week-in-rust.org">This Week in Rust</a></li>
+        <li><a href="https://doc.rust-lang.org/std/index.html">Rust 标准库 API 文档</a></li>
+        <li><a href="https://doc.rust-lang.org/stable/rust-by-example/">Rust By Example</a></li>
+        <li><a href="https://cheats.rs">Rust 单页手册</a></li>
+      </ul>
+      <div style="clear:both;"></div>
+    </div>
+  </div>
 </div>
 {% endblock content %}
